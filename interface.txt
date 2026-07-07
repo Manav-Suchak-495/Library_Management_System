@@ -1,0 +1,50 @@
+A Library Management System (LMS) book issue request page is a digital interface where patrons (like students or faculty) search for books and submit requests to borrow them, while allowing library administrators to process, approve, or track those requests. [1, 2]  
+The page is typically split into two perspectives depending on who is logged in: Patron View and Admin/Librarian View. [3]  
+1. Patron / User View 
+Patrons use this page to locate materials and queue them for pickup. 
+
+• Search & Discovery: Features a search bar to look up titles, authors, or ISBNs. 
+• Book Details: Displays availability status (Available, Checked Out, Reserved). 
+• Request Action: A single-click "Request Issue" or "Borrow" button. 
+• Request Status: A dashboard tracking the progress of submitted requests (e.g., Pending, Approved, Ready for Pickup). [1, 2, 5, 6, 7]  
+
+2. Admin / Librarian View 
+Librarians use this backend view to manage the library's daily loan inventory. 
+
+• Request Queue: A consolidated table listing all incoming issue requests. 
+• Patron Info: Details about the requesting user (e.g., Name, ID, Membership Status). 
+• Action Buttons: Options to "Approve" (generates an issue date and due date) or "Reject" (with reasons like missing stock or unpaid fines). 
+• Barcode/QR Integration: Tools to scan the book and automatically finalize the checkout process. [1, 2, 10, 11, 12]  
+
+Key Technical Specifications 
+Designing or updating this page typically involves managing specific data fields across both the front-end and back-end databases: [11]  
+
+| Attribute [1, 13, 14, 15, 16] | Data Type | Description  |
+| --- | --- | --- |
+| Request ID | — | Unique identifier for the specific transaction.  |
+| Book ID / ISBN | — | The specific book being requested.  |
+| User ID | — | Unique identifier of the requesting patron.  |
+| Status | — | Current state of the request (Pending, Approved, Rejected, Issued).  |
+| Requested Date | — | Timestamp of when the request was initiated.  |
+| Due Date | — | Calculated date by which the book must be returned.  |
+
+If you are designing or troubleshooting this page, tell me:Are you building this using a specific framework (e.g., React, PHP, Java Swing)?Do you need help with the database schema or the frontend UI/UX wireframe?Let me know how to proceed with your project. 
+AI can make mistakes, so double-check responses
+
+[1] https://www.youtube.com/watch?v=yDiAzdre_U8
+[2] https://www.scribd.com/document/953722922/Case-StudyLibrarymgmt
+[3] https://github.com/topics/library-management-system?l=java
+[4] https://www.g2.com/categories/library-management-systems
+[5] https://www.scribd.com/document/613649006/Library-Management-System-SRS-Report-Lib-1
+[6] https://i-lib.imu.edu.my/pluginfile.php/624/mod_resource/content/5/User_Manual_Lib_Apps.pdf
+[7] https://proquest.libguides.com/ebookcentral/WaitList
+[8] https://durgapurwomenscollege.ac.in/wp-content/uploads/2024/06/ComputerScience.pdf
+[9] https://www.ijraset.com/research-paper/library-management-system
+[10] https://dtct-academic-geekworkx.s3.ap-south-1.amazonaws.com/ckeditor/2025/03/04/128865657.pdf
+[11] https://www.youtube.com/watch?v=D6FvWuLOzbM
+[12] https://www.zoho.com/creator/apps/library-management-software.html
+[13] https://www.youtube.com/watch?v=PhRk4rysr0s
+[14] https://www.scribd.com/doc/211890403/Problem-Statement
+[15] https://www.ijraset.com/research-paper/library-management-system-using-java
+[16] https://pdfs.semanticscholar.org/4dcc/0d0c89bc8c53c497a3ce57339d035ae73e5b.pdf
+
