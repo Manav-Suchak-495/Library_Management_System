@@ -142,15 +142,15 @@ def verify_session(payload: dict):
             detail="Session expired or invalid token."
         )
     return {"authenticated": True}
-@app.get("/isAdmin")
-def verify_admin(token: str | None = Cookie(None)):
+@app.post("/isAdmin")
+def verify_admin(payload: dict):
     
-    if not token:
+    if not payload.get("Token"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Session missing. Please log in."
         )
-    user_data = verify_jwt_token(token)
+    user_data = verify_jwt_token(payload.get("Token"))
     
     if not user_data or user_data["user_role"] != "Admin":
         raise HTTPException(
@@ -195,7 +195,7 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
 def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_db_connection)):
     try:
         with db.cursor() as cursor:
-            if payload.get("queryFilter") == '' :
+            if payload.get("queryFilter") == '' or not payload.get("queryFilter") :
                 cursor.execute("SELECT * FROM book_data")
                 books = cursor.fetchall()
                 cursor.close()
