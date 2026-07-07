@@ -61,6 +61,8 @@ def get_db_connection():
             cursor_factory=RealDictCursor,
             sslmode="require"
         )
+        print(f"DEBUG: Connecting to host={DB_HOST}, user={DB_USER}")
+        print(f"DEBUG: Is password present? {'YES' if DB_PASSWORD else 'NO'}")
         return connection
     except Exception as e:
         print(f"Database connection failed: {e}")
