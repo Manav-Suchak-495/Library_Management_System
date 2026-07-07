@@ -38,7 +38,7 @@ function Login() {
     };
     const handleLogin = async () => {
             const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-            await axios.query(`${apiUrl}/isAdmin`).then((response) =>{
+            await axios.post(`${apiUrl}/Login`, {"email": email, "password": password}).then((response) =>{
             console.log('Login successful');
             navigate('/home');
         }).catch ((error)=>{

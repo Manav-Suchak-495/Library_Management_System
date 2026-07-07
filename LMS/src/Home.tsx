@@ -75,7 +75,7 @@ function Home() {
     
     useEffect(() => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.query(`${apiUrl}/isAdmin`).then((response) =>{
+        axios.get(`${apiUrl}/isAdmin`).then((response) =>{
             setIsAdmin(response.data.isAdmin)
             setEmail(response.data.user_email)
         })

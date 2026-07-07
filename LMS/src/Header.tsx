@@ -28,7 +28,7 @@ function Header( { handleAddDialog, fetchData } : Header_Interface ){
 
     useEffect(() =>{
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.query(`${apiUrl}/isAdmin`).then((response) =>{
+        axios.get(`${apiUrl}/isAdmin`).then((response) =>{
             setIsAdmin(response.data.isAdmin)
         })
         .catch(() => {
