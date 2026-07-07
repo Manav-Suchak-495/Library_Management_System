@@ -195,7 +195,7 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
 def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_db_connection)):
     try:
         with db.cursor() as cursor:
-            if not payload :
+            if payload.get("queryFilter") == '' :
                 cursor.execute("SELECT * FROM book_data")
                 books = cursor.fetchall()
                 cursor.close()
