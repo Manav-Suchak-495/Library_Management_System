@@ -21,7 +21,11 @@ origins = [
 @app.middleware("http")
 async def force_cors_preflight(request: Request, call_next):
     origin = request.headers.get("Origin")
-    allowed_origin = origin if origin in origins else "http://localhost:5173"
+    allowed_origin = "http://localhost:5173"
+
+    if origin:
+        if origin in origins or origin.endswith(".vercel.app"):
+            allowed_origin = origin
     if request.method == "OPTIONS":
         response = Response(status_code=200)
         response.headers["Access-Control-Allow-Origin"] = allowed_origin
