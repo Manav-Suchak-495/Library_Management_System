@@ -28,7 +28,7 @@ async def force_cors_preflight(request: Request, call_next):
     is_allowed = False
 
     if origin:
-        if origin in origins or origin.endswith(".vercel.app"):
+        if origin in origins or origin.endswith(".onrender.com"):
             is_allowed = True
 
     allowed_origin = origin if is_allowed else "http://localhost:5173"
