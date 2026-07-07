@@ -7,9 +7,10 @@ from psycopg2.extras import RealDictCursor
 import jwt
 from datetime import datetime, timedelta, timezone
 import os
-from Auth import SECRET_KEY, ALGORITHM
+from Auth import SECRET_KEY, ALGORITHM, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, load_dotenv
 
 app = FastAPI()
+load_dotenv()
 
 # Allow your frontend port to bypass the browser security model
 origins = [
@@ -56,7 +57,7 @@ def get_db_connection():
             port=int(os.getenv("DB_PORT")),
             database=os.getenv("DB_NAME"),
             user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"), # <--- Safely pulled from Render env variables
+            password=os.getenv("DB_PASSWORD"),
             cursor_factory=RealDictCursor,
             sslmode="require"
         )
