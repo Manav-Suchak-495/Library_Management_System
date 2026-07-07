@@ -51,7 +51,15 @@ async def force_cors_preflight(request: Request, call_next):
 def get_db_connection():
     database_url = os.environ.get("DATABASE_URL")
     try:
-        connection = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+        connection = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", 5432)),
+            database=os.getenv("DB_NAME", "postgres"),
+            user=os.getenv("DB_USER", "postgres.ifewrecwnlchgrvhbkwa"),
+            password=os.getenv("DB_PASSWORD"), # <--- Safely pulled from Render env variables
+            cursor_factory=RealDictCursor,
+            sslmode="require"
+        )
         return connection
     except Exception as e:
         print(f"Database connection failed: {e}")
