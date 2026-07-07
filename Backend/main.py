@@ -126,7 +126,7 @@ def login(
         traceback.print_exc()
         raise
 
-@app.api_route("/verify-session", methods=["QUERY"])
+@app.post("/verify-session")
 def verify_session(payload: dict):
     
     if not payload.get("Token"):
@@ -191,7 +191,7 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
     
     return {"success": True, "message": f"Book '{title}' successfully added to the catalog."}
 
-@app.api_route("/books/fetch", methods=["QUERY"])
+@app.post("/books/fetch")
 def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_db_connection)):
     try:
         with db.cursor() as cursor:

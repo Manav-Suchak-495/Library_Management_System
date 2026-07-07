@@ -50,7 +50,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
         }
         else if(issueAuthenticated){
                 const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-                await axios.query(`${apiUrl}/issue/request`).then((response) =>{
+                await axios.post(`${apiUrl}/issue/request`).then((response) =>{
                     alert("Issue request sent successfully");
                     onClose()
                 }).catch ((err)=> {

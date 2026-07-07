@@ -41,7 +41,7 @@ function Home() {
 
     const fetchBooks = ({queryFilter}: {queryFilter: string}) =>{
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.query(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
+        axios.post(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
             if(response.data && response.data.length > 0){
                     setBooks(response.data)
             }
@@ -54,7 +54,7 @@ function Home() {
     }
     const fetchBookDetails = ({queryFilter}: {queryFilter: string}) =>{
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.query(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
+        axios.post(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
             if(response.data && response.data.length > 0){
                     setBookDetails(response.data[0])
             }
