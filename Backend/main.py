@@ -6,7 +6,6 @@ from psycopg2.errors import UniqueViolation
 from psycopg2.extras import RealDictCursor
 import jwt
 from datetime import datetime, timedelta, timezone
-import secrets
 import os
 from Auth import SECRET_KEY, ALGORITHM
 
