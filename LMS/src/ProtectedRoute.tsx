@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
 
-const ProtectedRoute = () => {
+const ProtectedRoute = async () => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
+  await useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         axios.query(`${apiUrl}/verify-session`).then((response) =>{
         setIsAuthenticated(true);
