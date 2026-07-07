@@ -120,7 +120,7 @@ def login(
                 detail="User not found"
             )
 
-        token = create_jwt_token(email, user["user_role"])
+        token = create_jwt_token(email, user[5])
         print("TOKEN CREATED")
 
         response.set_cookie(
