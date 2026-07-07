@@ -20,21 +20,7 @@ origins = [
     "https://lms-six-wine.vercel.app"
 ]
 
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://lms-six-wine.vercel.app",
-    "https://lms-zex2ayamn-manav495.vercel.app" # <-- Added the Vercel branch from your screenshot!
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,             # <-- CRITICAL for Response.set_cookie() to work across domains!
-    allow_methods=["*"],                # <-- Allows GET, POST, OPTIONS, QUERY seamlessly
-    allow_headers=["*"],                # <-- Allows Authorization, Content-Type, Accept
-)
-"""@app.middleware("http")
+@app.middleware("http")
 async def force_cors_preflight(request: Request, call_next):
     origin = request.headers.get("Origin")
     
@@ -62,7 +48,7 @@ async def force_cors_preflight(request: Request, call_next):
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, QUERY, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
     response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response"""
+    return response
 
 
 def get_db_connection():
