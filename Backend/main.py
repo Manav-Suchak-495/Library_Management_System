@@ -40,7 +40,6 @@ async def force_cors_preflight(request: Request, call_next):
         response.headers["Access-Control-Allow-Credentials"] = "true"
         return response
 
-    # Process actual requests (like QUERY)
     response = await call_next(request)
     
     # Inject CORS headers into the final response as well
