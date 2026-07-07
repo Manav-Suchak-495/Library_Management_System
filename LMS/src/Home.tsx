@@ -44,6 +44,7 @@ function Home() {
         axios.post(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
             if(response.data && response.data.length > 0){
                     setBooks(response.data)
+                    console.log(books)
             }
         }).catch((err) =>{
             console.error("Error fetching books:", err);
