@@ -104,7 +104,7 @@ def login(
     try:
         email = payload.get("email")
         password = payload.get("password")
-
+        print(email,password)
         with db.cursor() as cursor:
             cursor.execute(
                 "SELECT * FROM user_data WHERE user_email=%s AND user_password=%s",
