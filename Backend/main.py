@@ -24,9 +24,11 @@ async def force_cors_preflight(request: Request, call_next):
     
     # 1. Determine if the origin is allowed
     is_allowed = False
+
     if origin:
         if origin in origins or origin.endswith(".vercel.app"):
             is_allowed = True
+
     allowed_origin = origin if is_allowed else "http://localhost:5173"
     if request.method == "OPTIONS":
         response = Response(status_code=200)
@@ -40,7 +42,7 @@ async def force_cors_preflight(request: Request, call_next):
     response = await call_next(request)
     
     # Inject CORS headers into the final response as well
-    response.headers["Access-Control-Allow-Origin"] = allowed_origin = origin if origin in origins else "http://localhost:5173"
+    response.headers["Access-Control-Allow-Origin"] = allowed_origin
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, QUERY, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
     response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -49,7 +51,7 @@ async def force_cors_preflight(request: Request, call_next):
 def get_db_connection():
     database_url = os.environ.get("DATABASE_URL")
     try:
-        connection = psycopg2.connect(database_url)
+        connection = psycopg2.connect(database_url, cursor_factory=RealDictCursor)
         return connection
     except Exception as e:
         print(f"Database connection failed: {e}")
@@ -72,7 +74,7 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
         value=create_jwt_token(email,user["user_role"]),
         httponly=True,       
         secure=True,     
-        samesite="lax",
+        samesite="none",
         max_age=3600
     )
     return {'Authenticated': True}
