@@ -8,7 +8,7 @@ const ProtectedRoute = async () => {
 
   await useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.query(`${apiUrl}/verify-session`).then((response) =>{
+        axios.get(`${apiUrl}/verify-session`).then((response) =>{
         setIsAuthenticated(true);
       }).catch(() => {
         setIsAuthenticated(false);
