@@ -7,7 +7,7 @@ from psycopg2.extras import RealDictCursor
 import jwt
 from datetime import datetime, timedelta, timezone
 import os
-from Auth import SECRET_KEY, ALGORITHM, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, load_dotenv
+from Auth import SECRET_KEY, ALGORITHM, load_dotenv
 import urllib
 
 app = FastAPI()
@@ -51,13 +51,21 @@ async def force_cors_preflight(request: Request, call_next):
     return response
 
 def get_db_connection():
-    encoded_user = urllib.parse.quote_plus(DB_USER)
-    encoded_password = urllib.parse.quote_plus(DB_PASSWORD)
+    load_dotenv()
 
-    connection_uri = f"postgresql://{encoded_user}:{encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
+def get_db_connection():
+    db_host = os.getenv("DB_HOST").strip()
+    db_port = os.getenv("DB_PORT").strip()
+    db_name = os.getenv("DB_NAME").strip()
+    db_user = os.getenv("DB_USER").strip()
+    db_password = os.getenv("DB_PASSWORD", "").strip()
+    encoded_user = urllib.parse.quote_plus(db_user)
+    encoded_password = urllib.parse.quote_plus(db_password)
+
+    connection_uri = f"postgresql://{encoded_user}:{encoded_password}@{db_host}:{db_port}/{db_name}?sslmode=require"
     try:
-        print(f"DEBUG: Connecting to host={DB_HOST}, user={DB_USER}")
-        print(f"DEBUG: Is password present? {'YES' if DB_PASSWORD else 'NO'}")
+        print(f"DEBUG: Connecting to host={db_host}, user={db_user}")
+        print(f"DEBUG: Is password present? {'YES' if db_password else 'NO'}")
         connection = psycopg2.connect(connection_uri)
         return connection
     except Exception as e:
