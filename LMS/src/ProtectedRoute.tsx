@@ -7,14 +7,12 @@ const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/verify-session')
-      .then(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        axios.query(`${apiUrl}/verify-session`).then((response) =>{
         setIsAuthenticated(true);
-      })
-      .catch(() => {
+      }).catch(() => {
         setIsAuthenticated(false);
-      })
-      .finally(() => {
+      }).finally(() => {
         setLoading(false);
       });
   }, []);

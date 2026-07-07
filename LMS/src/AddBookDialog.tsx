@@ -104,7 +104,8 @@ const categories = [
   const handleAddBook = async () =>{
     if(validateAddBookForm()){
       try {
-            await axios.post("http://localhost:8000/books/add", {...bookData, "issuedCount": 0, "status": "A", "addedBy": user_email});
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            await axios.query(`${apiUrl}/books/add`, {...bookData, "issuedCount": 0, "status": "A", "addedBy": user_email});
             alert("Book added successfully!");
             setBookData({ isbn: '', title: '', author: '', publisher: '', category: '', copyCount: '1', finalCopyCount: 1, description: '' });
             setFormErrors({});

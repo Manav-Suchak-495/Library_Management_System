@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogActions, Button, Box, Typography, DialogTitle, TextField } from '@mui/material';
 import axios from 'axios';
 import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BookDataInterface {
     book_isbn: string;
@@ -35,11 +35,12 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
     const assets = {
           Logo_Black: Logo_Black,
     };
-    
-    if(!isAdmin){
+    useEffect(()=>{
+        if(!isAdmin){
         setIssueEmail(user_email);
         setIsEmailVerified(true)
     }
+    },[])
     const handleBookDetail = async () =>{
         setIssueDialog(true);
     }
@@ -48,7 +49,8 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
 
         }
         else if(issueAuthenticated){
-                await axios.post("http://localhost:8000/issue/request").then((response)=>{
+                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+                await axios.query(`${apiUrl}/issue/request`).then((response) =>{
                     alert("Issue request sent successfully");
                     onClose()
                 }).catch ((err)=> {

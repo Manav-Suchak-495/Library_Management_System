@@ -27,7 +27,8 @@ function Header( { handleAddDialog, fetchData } : Header_Interface ){
     }, []);
 
     useEffect(() =>{
-        axios.get("http://localhost:8000/isAdmin").then((response) => {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        axios.query(`${apiUrl}/isAdmin`).then((response) =>{
             setIsAdmin(response.data.isAdmin)
         })
         .catch(() => {

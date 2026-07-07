@@ -37,16 +37,16 @@ function Login() {
         setPassword(event.target.value);
     };
     const handleLogin = async () => {
-        try {
-            const response = await axios.post('http://localhost:8000/Login', {email,password});
-            console.log('Login successful:', response.data);
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            await axios.query(`${apiUrl}/isAdmin`).then((response) =>{
+            console.log('Login successful');
             navigate('/home');
-        } catch (error) {
+        }).catch ((error)=>{
             console.error('Login failed or network error:', error);
             setShowError(true)
             setEmail('');
             setPassword('');
-        }
+        }) 
     };
   return (
     <Box

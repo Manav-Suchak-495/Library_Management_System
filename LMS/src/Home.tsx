@@ -40,7 +40,8 @@ function Home() {
     const [error, setError] = useState(false);
 
     const fetchBooks = ({queryFilter}: {queryFilter: string}) =>{
-        axios.query("http://localhost:8000/books/fetch",{queryFilter}).then((response) =>{
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        axios.query(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
             if(response.data && response.data.length > 0){
                     setBooks(response.data)
             }
@@ -52,7 +53,8 @@ function Home() {
         })
     }
     const fetchBookDetails = ({queryFilter}: {queryFilter: string}) =>{
-        axios.query("http://localhost:8000/books/fetch",{queryFilter}).then((response) =>{
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        axios.query(`${apiUrl}/books/fetch`,{queryFilter}).then((response) =>{
             if(response.data && response.data.length > 0){
                     setBookDetails(response.data[0])
             }
@@ -72,7 +74,8 @@ function Home() {
     }, []);
     
     useEffect(() => {
-        axios.get("http://localhost:8000/isAdmin").then((response) => {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        axios.query(`${apiUrl}/isAdmin`).then((response) =>{
             setIsAdmin(response.data.isAdmin)
             setEmail(response.data.user_email)
         })
