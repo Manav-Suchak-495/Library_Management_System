@@ -63,7 +63,7 @@ def get_db_connection():
     try:
         print(f"DEBUG: Connecting to host={db_host}, user={db_user}")
         print(f"DEBUG: Is password present? {'YES' if db_password else 'NO'}")
-        connection = psycopg2.connect(connection_uri)
+        connection = psycopg2.connect(connection_uri,cursor_factory=RealDictCursor)
         return connection
     except Exception as e:
         print(f"Database connection failed: {e}")
