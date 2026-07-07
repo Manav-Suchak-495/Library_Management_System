@@ -56,9 +56,9 @@ def get_db_connection():
 
     connection_uri = f"postgresql://{encoded_user}:{encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
     try:
-        connection = psycopg2.connect(connection_uri)
         print(f"DEBUG: Connecting to host={DB_HOST}, user={DB_USER}")
         print(f"DEBUG: Is password present? {'YES' if DB_PASSWORD else 'NO'}")
+        connection = psycopg2.connect(connection_uri)
         return connection
     except Exception as e:
         print(f"Database connection failed: {e}")
