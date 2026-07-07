@@ -117,7 +117,7 @@ def login(
                 detail="User not found"
             )
 
-        token = create_jwt_token(email, user[5])
+        token = create_jwt_token(email, user["user_role"])
         print("TOKEN CREATED")
 
         return {"Authenticated": True, "Token" : token}
