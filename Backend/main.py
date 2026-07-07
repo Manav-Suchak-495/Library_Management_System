@@ -15,13 +15,16 @@ app = FastAPI()
 origins = [
     "http://localhost:5173", # Default Vite + React port
     "http://127.0.0.1:5173",
+    "https://lms-six-wine.vercel.app"
 ]
 
 @app.middleware("http")
 async def force_cors_preflight(request: Request, call_next):
+    origin = request.headers.get("Origin")
+    allowed_origin = origin if origin in origins else "http://localhost:5173"
     if request.method == "OPTIONS":
         response = Response(status_code=200)
-        response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173" # Your Vite frontend URL
+        response.headers["Access-Control-Allow-Origin"] = allowed_origin
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, QUERY, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
         response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -31,7 +34,7 @@ async def force_cors_preflight(request: Request, call_next):
     response = await call_next(request)
     
     # Inject CORS headers into the final response as well
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    response.headers["Access-Control-Allow-Origin"] = allowed_origin = origin if origin in origins else "http://localhost:5173"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, QUERY, OPTIONS"
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
     response.headers["Access-Control-Allow-Credentials"] = "true"
@@ -61,9 +64,9 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
     response.set_cookie(
         key="token",
         value=create_jwt_token(email,user["user_role"]),
-        httponly=True,       # Prevents JavaScript reading (Blocks XSS)
-        secure=False,        # Set to True in production (HTTPS only)
-        samesite="lax",      # Protects against CSRF attacks
+        httponly=True,       
+        secure=True,     
+        samesite="lax",
         max_age=3600
     )
     return {'Authenticated': True}
@@ -160,10 +163,10 @@ def create_jwt_token(user_email: str, user_role: str):
     expiration = datetime.now(timezone.utc) + timedelta(hours=1)
     
     payload = {
-        "sub": user_email,                     # Subject (who the token belongs to)
+        "sub": user_email,
         "role": user_role,
-        "exp": expiration,                    # Expiration Timestamp
-        "iat": datetime.now(timezone.utc)     # Issued At Timestamp
+        "exp": expiration,
+        "iat": datetime.now(timezone.utc)
     }
     encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
