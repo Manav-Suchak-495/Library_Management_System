@@ -56,7 +56,7 @@ def get_db_connection():
     except Exception as e:
         print(f"Database connection failed: {e}")
         raise e
-@app.post("/Login")
+"""@app.post("/Login")
 def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     email = payload.get("email")
     password = payload.get("password")
@@ -77,7 +77,51 @@ def get_sample_user(payload: dict, response: Response, db: psycopg2.extensions.c
         samesite="none",
         max_age=3600
     )
-    return {'Authenticated': True}
+    return {'Authenticated': True}"""
+import traceback
+
+@app.post("/Login")
+def login(
+    payload: dict,
+    response: Response,
+    db: psycopg2.extensions.connection = Depends(get_db_connection),
+):
+    try:
+        email = payload.get("email")
+        password = payload.get("password")
+
+        with db.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM user_data WHERE user_email=%s AND user_password=%s",
+                (email, password),
+            )
+            user = cursor.fetchone()
+
+        print("USER =", user)
+
+        if not user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
+        token = create_jwt_token(email, user["user_role"])
+        print("TOKEN CREATED")
+
+        response.set_cookie(
+            key="token",
+            value=token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=3600
+        )
+
+        return {"Authenticated": True}
+
+    except Exception:
+        traceback.print_exc()
+        raise
 
 @app.get("/verify-session")
 def verify_session(token: str | None = Cookie(None)):
