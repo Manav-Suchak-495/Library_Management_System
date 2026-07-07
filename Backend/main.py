@@ -121,30 +121,21 @@ def login(
         token = create_jwt_token(email, user[5])
         print("TOKEN CREATED")
 
-        response.set_cookie(
-            key="token",
-            value=token,
-            httponly=True,
-            secure=True,
-            samesite="none",
-            max_age=3600
-        )
-
-        return {"Authenticated": True}
+        return {"Authenticated": True, "Token" : token}
 
     except Exception:
         traceback.print_exc()
         raise
 
-@app.get("/verify-session")
-def verify_session(token: str | None = Cookie(None)):
+@app.api_route("/verify-session", methods=["QUERY"])
+def verify_session(payload: dict):
     
-    if not token:
+    if not payload.get("Token"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Session missing. Please log in."
         )
-    user_data = verify_jwt_token(token)
+    user_data = verify_jwt_token(payload.get("Token"))
     
     if not user_data:
         raise HTTPException(
