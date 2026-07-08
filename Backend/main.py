@@ -201,8 +201,8 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     detail=f"Database error: {str(e)}"
                 )
         else:
-            issue_email = Token.get('sub')
-            issue_to = Token.get('name')
+            issue_email = Token.get('user_email')
+            issue_to = Token.get('user_name')
             issue_isbn = payload.get('issue_isbn')
             issue_title = payload.get('issue_title')
             issue_status = payload.get('issue_status')
@@ -214,7 +214,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 user_password = generate_secure_password()
                 try: 
                     with db.cursor() as cursor:
-                        cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile) VALUES(%s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile))
+                        cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile, user_role) VALUES(%s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile, 'Reader'))
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
