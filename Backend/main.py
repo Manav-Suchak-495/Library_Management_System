@@ -337,7 +337,7 @@ def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_d
         )
 
     
-def create_jwt_token(user_email: str, user_name: str, user_role: str, otp: int):
+def create_jwt_token(user_email: None, user_name: None, user_role: None, otp: None):
     """Generates a secure, encrypted JWT token that expires in 1 hour"""
     if user_email and user_role and user_role != '':
         expiration = datetime.now(timezone.utc) + timedelta(hours=1)
