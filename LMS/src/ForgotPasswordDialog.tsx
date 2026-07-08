@@ -25,7 +25,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
             })
         }
         else{
-            await axios.post(`${apiUrl}/verify-otp`, {"Token": token, "forgot": true}).then((response)=>{
+            await axios.post(`${apiUrl}/verify-otp`, {"Token": token, "forgot": true, "otp": otp}).then((response)=>{
                 if(response.data.Authenticated){
                     console.log('Login successful');
                     sessionStorage.setItem("Token", response.data.Token);
@@ -39,7 +39,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
         }
     }
     return(
-        <Dialog open={forgotPasswordDialog} onClose={()=>{setForgotPasswordDialog}} fullWidth maxWidth={false} 
+        <Dialog open={forgotPasswordDialog} onClose={()=>setForgotPasswordDialog} fullWidth maxWidth={false} 
                 slotProps={{
                     paper: {
                     sx: {
@@ -86,7 +86,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 (<Typography onClick={ async ()=>{
                     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
                     await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
-                        if(response.data.OTP_Sent){
+                        if(response.data.Authenticated){
                             alert('OTP sent successfully!!!')
                             setIsEmailVerified(true)
                             setToken(response.data.Token)
