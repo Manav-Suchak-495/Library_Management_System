@@ -133,7 +133,7 @@ def send_email(email: string, name: string, otp: string, password: string, role:
     message.attach(MIMEText(body, "plain"))
 
     try:
-        server = smtplib.SMTP(os.getenv("SMTP_SEVER"), os.getenv("SMTP_PORT"))
+        server = smtplib.SMTP(os.getenv("SMTP_SERVER"), os.getenv("SMTP_PORT"))
         server.starttls()
         
         server.login(os.getenv("SMTP_SENDER"), os.getenv("SMTP_PASSWORD"))
@@ -170,7 +170,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
         role = ''
         name = ''
     otp = generate_otp()
-    return send_email(email=email,name=name,otp=otp,role=role)
+    return send_email(email=email, name=name, otp=otp, role=role, password=None)
     
 
 def generate_secure_password(length=8):
@@ -190,7 +190,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 with db.cursor() as cursor:
                     cursor.execute("UPDATE user_data SET user_password = %s WHERE user_email = %s",(user_password, user_email))
                     db.commit()
-                send_email(email=user_email,password=user_password)
+                send_email(email=user_email, role=None, otp=None, user_name=None,password=user_password)
                 return login({'email': user_email, 'password' : user_password})
             except Exception as e:
                 db.rollback()
@@ -215,7 +215,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
-                        return send_email(email=user_email,password=user_password)
+                        return send_email( email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
                     raise HTTPException(
@@ -229,7 +229,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
-                        send_email(email=user_email,password=user_password)
+                        send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
                     raise HTTPException(
@@ -241,7 +241,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     with db.cursor() as cursor:
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status))
                         db.commit()
-                        send_email(email=user_email,password=user_password)
+                        send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
                     raise HTTPException(
