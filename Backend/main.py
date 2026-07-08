@@ -192,7 +192,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 with db.cursor() as cursor:
                     cursor.execute("UPDATE user_data SET user_password = %s WHERE user_email = %s",(user_password, user_email))
                     db.commit()
-                send_email(email=user_email, role='', otp='', user_name=Token.get('user_name'),password=user_password)
+                send_email(email=user_email, role='', otp='', name=Token.get('user_name'),password=user_password)
                 token = create_jwt_token(user_email=user_email, user_name=Token.get('user_name'),user_role=Token.get('user_role'),otp=None)
                 return {"Authenticated": True, "Token" : token}
             except Exception as e:
