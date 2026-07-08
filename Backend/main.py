@@ -151,7 +151,11 @@ def send_email(email: string, name: string, otp: string, password: string, role:
 
 @app.post("/otp")
 def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
-    if not payload.get("signup"):
+    if payload.get("signup"):
+        email = payload.get("email")
+        role = ''
+        name = ''
+    else:
         email = payload.get("email")
         with db.cursor() as cursor:
             cursor.execute("SELECT * FROM user_data WHERE user_email=%s",(email,))
@@ -165,10 +169,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
         email = user['user_email']
         role = user['user_role']
         name = user['user_name']
-    else:
-        email = payload.get("email")
-        role = ''
-        name = ''
+        
     otp = generate_otp()
     return send_email(email=email, name=name, otp=otp, role=role, password='')
     
@@ -192,7 +193,8 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     cursor.execute("UPDATE user_data SET user_password = %s WHERE user_email = %s",(user_password, user_email))
                     db.commit()
                 send_email(email=user_email, role='', otp='', user_name=Token.get('user_name'),password=user_password)
-                return login({'email': user_email, 'password' : user_password})
+                token = create_jwt_token(user_email=user_email, user_name=Token.get('user_name'),user_role=Token.get('user_role'),otp=None)
+                return {"Authenticated": True, "Token" : token}
             except Exception as e:
                 db.rollback()
                 traceback.print_stack(e)

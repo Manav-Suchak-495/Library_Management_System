@@ -29,7 +29,6 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 if(response.data.Authenticated){
                     console.log('Login successful');
                     sessionStorage.setItem("Token", response.data.Token);
-                    setToken(response.data.Token)
                     setForgotPasswordDialog(false)
                     navigate('/home');
                 }
@@ -132,7 +131,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                             backgroundColor: '#27CF54',
                             ml: 1,
                         }}>
-                            Send OTP
+                            {isEmailVerified? "Submit" : "Send OTP"}
                         </Button>
                     </Box>
                 </DialogActions>
