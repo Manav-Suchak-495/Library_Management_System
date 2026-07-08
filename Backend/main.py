@@ -89,7 +89,7 @@ def login(payload: dict,response: Response,db: psycopg2.extensions.connection = 
                 status_code=404,
                 detail="User not found"
             )
-        token = create_jwt_token(email, user["user_name"],user["user_role"])
+        token = create_jwt_token(user_email=email, user_name=user["user_name"],user_role=user["user_role"],otp=None)
         return {"Authenticated": True, "Token" : token}
 
     except Exception:
@@ -337,7 +337,7 @@ def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_d
         )
 
     
-def create_jwt_token(user_email: None, user_name: None, user_role: None, otp: None):
+def create_jwt_token(user_email: string, user_name: string, user_role: string, otp: int):
     """Generates a secure, encrypted JWT token that expires in 1 hour"""
     if user_email and user_role and user_role != '':
         expiration = datetime.now(timezone.utc) + timedelta(hours=1)
