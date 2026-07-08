@@ -35,15 +35,21 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
     const assets = {
           Logo_Black: Logo_Black,
     };
-    useEffect(()=>{
-        if(!isAdmin){
-        setIssueEmail(user_email);
-        handleIssueBook()
-
-    }
-    },[])
     const handleBookDetail = async () =>{
         setIssueDialog(true);
+        if(!isAdmin){
+            setIssueEmail(user_email);
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            await axios.post(`${apiUrl}/otp`, {"email": user_email, "signup": false}).then((response)=>{
+                    if(response.data.Authenticated){
+                        setIsEmailVerified(true)
+                        alert('OTP sent successfully!!!')
+                        setToken(response.data.Token)
+                    }
+                }).catch((error)=>{
+                        console.log("Error While Verifying Email" + error.response?.data)
+                })
+        }
     }
     const handleIssueBook = async () =>{
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -75,18 +81,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
             }
         }
         else{
-            if(!isAdmin && issueEmail.trim() !== ''){
-                await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": false}).then((response)=>{
-                    if(response.data.Authenticated){
-                        setIsEmailVerified(true)
-                        alert('OTP sent successfully!!!')
-                        setToken(response.data.Token)
-                    }
-                }).catch((error)=>{
-                        console.log("Error While Verifying Email" + error.response?.data)
-                })
-            }
-            else if(isAdmin && issueEmail.trim() !== '' && !signUp){
+            if(isAdmin && issueEmail.trim() !== '' && !signUp){
                     await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": false}).then((response)=>{
                     if(response.data.Authenticated){
                         setIsEmailVerified(true)
@@ -333,7 +328,10 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
         </DialogActions>
 
         <Dialog open={issueDialog} 
-        onClose={()=>{()=>{setIssueDialog(false)};}} 
+        onClose={(e,reason)=>{ 
+            if (reason === 'backdropClick') return;
+            setIssueDialog(false)
+        }} 
         fullWidth maxWidth={false} 
         disableRestoreFocus
             slotProps={{
