@@ -140,7 +140,7 @@ def send_email(email: string, name: string, otp: string, password: string, role:
         server.sendmail(os.getenv("SMTP_SENDER"), email, message.as_string())
         if otp and otp != '':
             print(f"OTP sent successfully to {email}!")
-            Token = create_jwt_token(email=email, name=name, otp=otp, role=role)
+            Token = create_jwt_token(user_email=email, user_name=name, otp=otp, user_role=role)
             return {"Authenticated" : True, "Token" : Token}
     except Exception as e:
         print(f"Failed to send email: {e}")
