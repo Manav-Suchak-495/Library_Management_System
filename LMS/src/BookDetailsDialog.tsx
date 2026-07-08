@@ -450,7 +450,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
 
                     <Button
                     onClick={()=>{
-                        handleIssueButton()
+                        handleIssueBook()
                     }}
                     disabled = {isEmailVerified ? (otp.trim().length < 6) :(signUp?(issueEmail.trim() === '' || issueName === '' || issueMobile.length < 10) : (issueEmail.trim() === ''))}
                     sx={{
