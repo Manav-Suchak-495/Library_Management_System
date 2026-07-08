@@ -49,16 +49,16 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         if(isEmailVerified){
             if(!isAdmin && otp.trim() !== ''){
-                await axios.post(`${apiUrl}/verify-otp`, {'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
+                await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
                     if(response.data.Authenticated){
-                        alert('Book Request Sent.')
+                        alert('Book Request for' + bookDetails.book_title + ' Sent Successfully.')
                     }
                 }).catch((error)=>{
                     console.log("Error While Issueing Book" + error.response?.data)
                 })
             }
             else if(isAdmin && otp.trim() !== '' && !signUp){
-                    await axios.post(`${apiUrl}/verify-otp`, {'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
+                    await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
                         alert(bookDetails.book_title + ' is issued to ' + issueName)
                     }}).catch((error)=>{
@@ -66,7 +66,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                     })
             }
             else if(isAdmin && signUp){
-                await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName,'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
+                await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName, 'user_email': issueEmail, 'user_mobile': issueMobile, 'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": true, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
                         alert(bookDetails.book_title + ' is issued to ' + issueName)
                     }}).catch((error)=>{

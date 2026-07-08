@@ -89,7 +89,7 @@ def login(payload: dict,response: Response,db: psycopg2.extensions.connection = 
                 status_code=404,
                 detail="User not found"
             )
-        token = create_jwt_token(email, user["user_role"])
+        token = create_jwt_token(email, user["user_name"],user["user_role"])
         return {"Authenticated": True, "Token" : token}
 
     except Exception:
@@ -99,7 +99,7 @@ def login(payload: dict,response: Response,db: psycopg2.extensions.connection = 
 def generate_otp():
     return str(random.randint(100000, 999999))
 
-def send_email(email: string, otp: string, password: string, role: string):
+def send_email(email: string, name: string, otp: string, password: string, role: string):
 
     message = MIMEMultipart()
     message["From"] = os.getenv("SMTP_SENDER")
@@ -123,7 +123,7 @@ def send_email(email: string, otp: string, password: string, role: string):
         body = f"""
         Hello,
 
-        Thanks for being with LMS 
+        ThankYou {name} for being with LMS 
         Your new secure password for verification and login is: {password}
 
         Best regards,
@@ -140,7 +140,7 @@ def send_email(email: string, otp: string, password: string, role: string):
         server.sendmail(os.getenv("SMTP_SENDER"), email, message.as_string())
         if otp and otp != '':
             print(f"OTP sent successfully to {email}!")
-            Token = create_jwt_token(email=email, otp=otp, role=role)
+            Token = create_jwt_token(email=email, name=name, otp=otp, role=role)
             return {"Authenticated" : True, "Token" : Token}
     except Exception as e:
         print(f"Failed to send email: {e}")
@@ -164,11 +164,13 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
             )
         email = user['user_email']
         role = user['user_role']
+        name = user['user_name']
     else:
         email = payload.get("email")
         role = ''
+        name = ''
     otp = generate_otp()
-    return send_email(email,otp,role=role)
+    return send_email(email=email,name=name,otp=otp,role=role)
     
 
 def generate_secure_password(length=8):
@@ -197,9 +199,8 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     detail=f"Database error: {str(e)}"
                 )
         else:
-            issue_title = payload.get('issue_title')
-            issue_email = payload.get('issue_email')
-            issue_to = payload.get('issue_to')
+            issue_email = Token.get('sub')
+            issue_to = Token.get('name')
             issue_isbn = payload.get('issue_isbn')
             issue_title = payload.get('issue_title')
             issue_status = payload.get('issue_status')
@@ -336,12 +337,13 @@ def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_d
         )
 
     
-def create_jwt_token(user_email: str, user_role: str, otp: int):
+def create_jwt_token(user_email: str, user_name: str, user_role: str, otp: int):
     """Generates a secure, encrypted JWT token that expires in 1 hour"""
     if user_email and user_role and user_role != '':
         expiration = datetime.now(timezone.utc) + timedelta(hours=1)
         payload = {
             "sub": user_email,
+            "name": user_name,
             "role": user_role,
             "otp": otp,
             "exp": expiration,
@@ -351,6 +353,7 @@ def create_jwt_token(user_email: str, user_role: str, otp: int):
         expiration = datetime.now(timezone.utc) + timedelta(minutes=5)
         payload = {
             "sub": user_email,
+            "nmae": user_name,
             "role": user_role,
             "otp": otp,
             "exp": expiration,
@@ -362,7 +365,6 @@ def create_jwt_token(user_email: str, user_role: str, otp: int):
 def verify_jwt_token(token: str):
     try:
         decoded_payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        if decoded_payload.get("sub") and decoded_payload.get("role"):
-            return { "user_email": decoded_payload.get("sub"), "user_role": decoded_payload.get("role"), "otp": decoded_payload.get('otp')}
+        return { "user_email": decoded_payload.get("sub"), "user_name": decoded_payload.get("name"), "user_role": decoded_payload.get("role"), "otp": decoded_payload.get('otp')}
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         return None
