@@ -123,7 +123,7 @@ def send_email(email: string, name: string, otp: string, password: string, role:
         body = f"""
         Hello,
 
-        ThankYou {name} for being with LMS 
+        ThankYou for being with LMS 
         Your new secure password for verification and login is: {password}
 
         Best regards,
