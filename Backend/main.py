@@ -185,9 +185,9 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
     Token = verify_jwt_token(payload.get('Token'))
     if int(payload.get("otp")) == int(Token.get('otp')):
         user_email=Token.get('user_email')
-        user_password = generate_secure_password()
         if payload.get('forgot'):
             try: 
+                user_password = generate_secure_password()
                 with db.cursor() as cursor:
                     cursor.execute("UPDATE user_data SET user_password = %s WHERE user_email = %s",(user_password, user_email))
                     db.commit()
@@ -195,6 +195,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 return login({'email': user_email, 'password' : user_password})
             except Exception as e:
                 db.rollback()
+                traceback.print_stack(e)
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail=f"Database error: {str(e)}"
@@ -210,6 +211,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 user_email = payload.get('user_email')
                 user_name = payload.get('user_name')
                 user_mobile = payload.get('user_mobile')
+                user_password = generate_secure_password()
                 try: 
                     with db.cursor() as cursor:
                         cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile) VALUES(%s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile))
@@ -219,6 +221,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         return send_email( email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
+                    traceback.print_stack(e)
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=f"Database error: {str(e)}"
@@ -233,6 +236,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         return send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
+                    traceback.print_stack(e)
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=f"Database error: {str(e)}"
@@ -245,6 +249,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         return send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
                 except Exception as e:
                     db.rollback()
+                    traceback.print_stack(e)
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=f"Database error: {str(e)}"
