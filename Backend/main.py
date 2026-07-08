@@ -175,6 +175,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
 
 def generate_secure_password(length=8):
     all_characters = string.ascii_letters + string.digits + "#?$@_!"
+    password = []
     password += [secrets.choice(all_characters) for i in range(length)]
     secrets.SystemRandom().shuffle(password)
     return "".join(password)
