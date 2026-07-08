@@ -233,7 +233,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
-                        return send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
+                        return send_email(email=user_email, name=None, role=None, otp=None, password=None)
                 except Exception as e:
                     db.rollback()
                     traceback.print_stack(e)
@@ -246,7 +246,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     with db.cursor() as cursor:
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status))
                         db.commit()
-                        return send_email(email=user_email, name=None, role=None, otp=None, password=user_password)
+                        return send_email(email=user_email, name=None, role=None, otp=None, password=None)
                 except Exception as e:
                     db.rollback()
                     traceback.print_stack(e)
