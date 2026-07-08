@@ -33,7 +33,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                     navigate('/home');
                 }
             }).catch((error)=>{
-                console.log("Error While Verifying Email" + error.response?.data)
+                console.log("Error While Verifying Email" + error.response?.data + error)
             })
         }
     }
