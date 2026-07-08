@@ -79,6 +79,8 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                         console.log("Error While Verifying Email" + error.response?.data)
                     })
             }
+            setIssueDialog(false)
+            onClose()
         }
         else{
             if(isAdmin && issueEmail.trim() !== '' && !signUp){

@@ -1,6 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material"
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: { forgotPasswordDialog: boolean, setForgotPasswordDialog: (args :boolean) => void}) => {
     
@@ -8,12 +9,13 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
     const [otp, setOtp] = useState('');
     const [isEmailVerified, setIsEmailVerified] = useState(false)
     const [token, setToken] = useState('')
+    const navigate = useNavigate()
 
     const handleForgotPassword = async () => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         if(!isEmailVerified){
             await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
-                if(response.data.OTP_Sent){
+                if(response.data.Authenticated){
                     alert('OTP sent successfully!!!')
                     setIsEmailVerified(true)
                     setToken(response.data.Token)
@@ -23,11 +25,13 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
             })
         }
         else{
-            await axios.post(`${apiUrl}/otp`, {"email" : email, "issue": false, "signup": false}).then((response)=>{
-                if(response.data.OTP_Sent){
-                    alert('OTP sent successfully!!!')
-                    setIsEmailVerified(true)
+            await axios.post(`${apiUrl}/verify-otp`, {"Token": token, "forgot": true}).then((response)=>{
+                if(response.data.Authenticated){
+                    console.log('Login successful');
+                    sessionStorage.setItem("Token", response.data.Token);
                     setToken(response.data.Token)
+                    setForgotPasswordDialog(false)
+                    navigate('/home');
                 }
             }).catch((error)=>{
                 console.log("Error While Verifying Email" + error.response?.data)

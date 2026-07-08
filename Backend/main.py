@@ -191,7 +191,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 with db.cursor() as cursor:
                     cursor.execute("UPDATE user_data SET user_password = %s WHERE user_email = %s",(user_password, user_email))
                     db.commit()
-                send_email(email=user_email, role='', otp='', user_name='',password=user_password)
+                send_email(email=user_email, role='', otp='', user_name=Token.get('user_name'),password=user_password)
                 return login({'email': user_email, 'password' : user_password})
             except Exception as e:
                 db.rollback()
@@ -218,7 +218,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                         cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
-                        return send_email( email=user_email, name='', role='', otp='', password=user_password)
+                        return send_email( email=user_email, name='', role=Token.get('user_name'), otp='', password=user_password)
                 except Exception as e:
                     db.rollback()
                     traceback.print_stack(e)
