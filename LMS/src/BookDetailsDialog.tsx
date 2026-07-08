@@ -31,32 +31,87 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
     const [issueMobile, setIssueMobile] = useState('');
     const [otp, setOtp] = useState('')
     const [isEmailVerified, setIsEmailVerified] = useState(false)
-    const [issueAuthenticated, setIssueAuthenticated] = useState(false);
+    const [token, setToken] = useState('')
     const assets = {
           Logo_Black: Logo_Black,
     };
     useEffect(()=>{
         if(!isAdmin){
         setIssueEmail(user_email);
-        setIsEmailVerified(true)
+        handleIssueBook()
+
     }
     },[])
     const handleBookDetail = async () =>{
         setIssueDialog(true);
     }
     const handleIssueBook = async () =>{
-        if(isAdmin && issueAuthenticated){
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        if(isEmailVerified){
+            if(!isAdmin && otp.trim() !== ''){
+                await axios.post(`${apiUrl}/verify-otp`, {'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
+                    if(response.data.Authenticated){
+                        alert('Book Request Sent.')
+                    }
+                }).catch((error)=>{
+                    console.log("Error While Issueing Book" + error.response?.data)
+                })
+            }
+            else if(isAdmin && otp.trim() !== '' && !signUp){
+                    await axios.post(`${apiUrl}/verify-otp`, {'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
+                    if(response.data.Authenticated){
+                        alert(bookDetails.book_title + ' is issued to ' + issueName)
+                    }}).catch((error)=>{
+                        console.log("Error While Issueing Book" + error.response?.data)
+                    })
+            }
+            else if(isAdmin && signUp){
+                await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName,'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
+                    if(response.data.Authenticated){
+                        alert(bookDetails.book_title + ' is issued to ' + issueName)
+                    }}).catch((error)=>{
+                        console.log("Error While Verifying Email" + error.response?.data)
+                    })
+            }
+        }
+        else{
+            if(!isAdmin && issueEmail.trim() !== ''){
+                await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": false}).then((response)=>{
+                    if(response.data.Authenticated){
+                        setIsEmailVerified(true)
+                        alert('OTP sent successfully!!!')
+                        setToken(response.data.Token)
+                    }
+                }).catch((error)=>{
+                        console.log("Error While Verifying Email" + error.response?.data)
+                })
+            }
+            else if(isAdmin && issueEmail.trim() !== '' && !signUp){
+                    await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": false}).then((response)=>{
+                    if(response.data.Authenticated){
+                        setIsEmailVerified(true)
+                        alert('OTP sent successfully!!!')
+                        setToken(response.data.Token)
+                    }}).catch((error)=>{
+                        console.log("Error While Verifying Email" + error.response?.data)
+                    })
+            }
+            else if(isAdmin && signUp){
+                await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": true}).then((response)=>{
+                    if(response.data.Authenticated){
+                        setIsEmailVerified(true)
+                        alert('OTP sent successfully!!!')
+                        setToken(response.data.Token)
+                    }}).catch((error)=>{
+                        console.log("Error While Verifying Email" + error.response?.data)
+                    })
+            }
+        }
 
-        }
-        else if(issueAuthenticated){
-                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-                await axios.post(`${apiUrl}/issue/request`).then((response) =>{
-                    alert("Issue request sent successfully");
-                    onClose()
-                }).catch ((err)=> {
-                console.error("request failed", err);
-            })
-        }
+    }
+
+    const handleIssueButton = () =>{
+
     }
 
     return (
@@ -394,6 +449,9 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                     </Button>
 
                     <Button
+                    onClick={()=>{
+                        handleIssueButton()
+                    }}
                     disabled = {isEmailVerified ? (otp.trim().length < 6) :(signUp?(issueEmail.trim() === '' || issueName === '' || issueMobile.length < 10) : (issueEmail.trim() === ''))}
                     sx={{
                         width: '100%',

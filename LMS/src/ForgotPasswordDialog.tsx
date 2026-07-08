@@ -1,4 +1,5 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material"
+import axios from "axios";
 import { useState } from "react";
 
 const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: { forgotPasswordDialog: boolean, setForgotPasswordDialog: (args :boolean) => void}) => {
@@ -6,6 +7,33 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [isEmailVerified, setIsEmailVerified] = useState(false)
+    const [token, setToken] = useState('')
+
+    const handleForgotPassword = async () => {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        if(!isEmailVerified){
+            await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
+                if(response.data.OTP_Sent){
+                    alert('OTP sent successfully!!!')
+                    setIsEmailVerified(true)
+                    setToken(response.data.Token)
+                }
+            }).catch((error)=>{
+                console.log("Error While Verifying Email" + error.response?.data)
+            })
+        }
+        else{
+            await axios.post(`${apiUrl}/otp`, {"email" : email, "issue": false, "signup": false}).then((response)=>{
+                if(response.data.OTP_Sent){
+                    alert('OTP sent successfully!!!')
+                    setIsEmailVerified(true)
+                    setToken(response.data.Token)
+                }
+            }).catch((error)=>{
+                console.log("Error While Verifying Email" + error.response?.data)
+            })
+        }
+    }
     return(
         <Dialog open={forgotPasswordDialog} onClose={()=>{setForgotPasswordDialog}} fullWidth maxWidth={false} 
                 slotProps={{
@@ -50,6 +78,21 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                         bordercolor: 'primary.main',
                         }, 
                 }}/>
+                {isEmailVerified &&
+                (<Typography onClick={ async ()=>{
+                    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+                    await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
+                        if(response.data.OTP_Sent){
+                            alert('OTP sent successfully!!!')
+                            setIsEmailVerified(true)
+                            setToken(response.data.Token)
+                        }}).catch((error)=>{
+                            console.log("Error While Verifying Email" + error.response?.data)
+                        })
+                }}
+                    sx={{ mt: 0.5, fontWeight: 'semibold', textAlign: 'right', color: 'primary.main', fontSize: '0.75rem', '&:hover': { color: '#09BF18', textDecoration: 'underline' }, cursor: 'pointer',}}>
+                        Resend OTP
+                </Typography>)}
                 </DialogContent>
                 <DialogActions sx={{
                     px: "24px",
@@ -74,7 +117,9 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                             Cancel
                         </Button>
 
-                        <Button
+                        <Button onClick={()=>{
+                            handleForgotPassword()
+                        }}
                         disabled = {email.trim() === ''}
                         sx={{
                             width: '100%',
