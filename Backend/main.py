@@ -99,7 +99,7 @@ def login(payload: dict,response: Response,db: psycopg2.extensions.connection = 
 def generate_otp():
     return str(random.randint(100000, 999999))
 
-def send_email(email: string, name: string, otp: string, password: string, role: string):
+def send_email(email= None, name= None, otp= None, password= None, role=None):
 
     message = MIMEMultipart()
     message["From"] = os.getenv("SMTP_SENDER")
