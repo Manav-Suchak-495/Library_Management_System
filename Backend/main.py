@@ -182,7 +182,7 @@ def generate_secure_password(length=8):
 @app.post("/verify-otp")
 def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     Token = verify_jwt_token(payload.get('Token'))
-    if payload.get("otp") == Token.get('otp'):
+    if int(payload.get("otp")) == int(Token.get('otp')):
         user_email=Token.get('user_email')
         user_password = generate_secure_password()
         if payload.get('forgot'):
