@@ -1,6 +1,7 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, MenuItem } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Select, MenuItem, Box } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
+import LoadingOverlay from './LoadingOverlay';
 
 interface AddBookDialogInterface {
   open: boolean;
@@ -65,6 +66,7 @@ const AddBookDialog = ({ open, onClose, user_email, fetchBooks }: AddBookDialogI
     description: ''
   });
     const [formErrors, setFormErrors] = useState<FormErrors>({});
+    const [isLoading, setIsLoading] = useState(false);
     
 
   const validateAddBookForm = () => {
@@ -106,26 +108,29 @@ const AddBookDialog = ({ open, onClose, user_email, fetchBooks }: AddBookDialogI
 
   const handleAddBook = async () =>{
     if(validateAddBookForm()){
-      try {
-            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-            await axios.post(`${apiUrl}/books/add`, {...bookData, "issuedCount": 0, "status": "Available", "addedBy": user_email});
-            alert("Book added successfully!");
-            setBookData({ isbn: '', title: '', author: '', publisher: '', category: '', copyCount: '1', finalCopyCount: 1, description: '' });
-            setFormErrors({});
-            fetchBooks()
-            onClose()
-        } catch (err) {
-            console.error("Submission failed", err);
-        }
+      setIsLoading(true);
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      await axios.post(`${apiUrl}/books/add`, {...bookData, "issuedCount": 0, "status": "Available", "addedBy": user_email}).then(()=>{
+        alert("Book added successfully!");
+        setBookData({ isbn: '', title: '', author: '', publisher: '', category: '', copyCount: '1', finalCopyCount: 1, description: '' });
+        setFormErrors({});
+        fetchBooks()
+        onClose()
+      }).catch((err)=>{
+        console.error("Submission failed", err);
+      }).finally(()=>{
+            setIsLoading(false);
+      })
 
     }
   }
 
   return (
-    <Dialog open={open} onClose={() => {onClose}} fullWidth maxWidth={false} 
+    <Dialog open={open} onClose={isLoading ? undefined : onClose} fullWidth maxWidth={false} 
       slotProps={{
         paper: {
           sx: {
+            position: 'relative',
             width: '418px', 
             maxWidth: 'calc(100% - 32px)',
             margin: 'auto',
@@ -133,6 +138,7 @@ const AddBookDialog = ({ open, onClose, user_email, fetchBooks }: AddBookDialogI
           }
         }
       }}>
+      <LoadingOverlay open={isLoading} />
       <DialogTitle sx={{
         fontSize: '1.5rem',
         fontStyle: 'Bold',
@@ -304,6 +310,7 @@ const AddBookDialog = ({ open, onClose, user_email, fetchBooks }: AddBookDialogI
           Cancel
         </Button>
         <Button onClick={handleAddBook}
+        disabled={isLoading}
         sx={{
           borderRadius: 1.8,
           color: '#000000',

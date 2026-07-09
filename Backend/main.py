@@ -250,7 +250,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
             elif not payload.get("signup") and not payload.get("issue"):
                 try: 
                     with db.cursor() as cursor:
-                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status))
+                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status) VALUES(%s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status))
                         db.commit()
                         return {"Authenticated" : True}
                 except Exception as e:
@@ -278,6 +278,7 @@ def verify_session(payload: dict):
             detail="Session expired or invalid token."
         )
     return {"authenticated": True}
+
 @app.post("/isAdmin")
 def verify_admin(payload: dict):
     
@@ -288,12 +289,15 @@ def verify_admin(payload: dict):
         )
     user_data = verify_jwt_token(payload.get("Token"))
     
-    if not user_data or user_data["user_role"] != "Admin":
+    if not user_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Session expired or invalid token."
         )
-    return {"isAdmin": True, "user_email": user_data["user_email"]}
+    if user_data["user_role"] != "Admin":
+        return {"isAdmin": False, "user_email": user_data["user_email"]}
+    else:
+        return {"isAdmin": True, "user_email": user_data["user_email"]}
 
 @app.post("/books/add")
 def add_books(payload: dict, response: Response, db: psycopg2.extensions.connection = Depends(get_db_connection)):

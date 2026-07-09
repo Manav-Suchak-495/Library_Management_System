@@ -2,6 +2,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingOverlay from "./LoadingOverlay";
 
 const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: { forgotPasswordDialog: boolean, setForgotPasswordDialog: (args :boolean) => void}) => {
     
@@ -10,10 +11,12 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
     const [isEmailVerified, setIsEmailVerified] = useState(false)
     const [token, setToken] = useState('')
     const navigate = useNavigate()
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleForgotPassword = async () => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         if(!isEmailVerified){
+            setIsLoading(true)
             await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
                 if(response.data.Authenticated){
                     alert('OTP sent successfully!!!')
@@ -22,9 +25,12 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 }
             }).catch((error)=>{
                 console.log("Error While Verifying Email" + error.response?.data)
+            }).finally(()=>{
+                setIsLoading(false)
             })
         }
         else{
+            setIsLoading(true)
             await axios.post(`${apiUrl}/verify-otp`, {"Token": token, "forgot": true, "otp": otp}).then((response)=>{
                 if(response.data.Authenticated){
                     console.log('Login successful');
@@ -34,11 +40,13 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 }
             }).catch((error)=>{
                 console.log("Error While Verifying Email" + error.response?.data + error)
+            }).finally(()=>{
+                setIsLoading(false)
             })
         }
     }
     return(
-        <Dialog open={forgotPasswordDialog} onClose={()=>setForgotPasswordDialog} fullWidth maxWidth={false} 
+        <Dialog open={forgotPasswordDialog} onClose={()=>setForgotPasswordDialog(false)} fullWidth maxWidth={false} 
                 slotProps={{
                     paper: {
                     sx: {
@@ -50,6 +58,18 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                     }
                     }
             }}>
+                {isLoading && forgotPasswordDialog && (
+                <Box sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'transparent',
+                }}>
+                    <LoadingOverlay open={isLoading}/>
+                </Box>)}
                 <DialogTitle sx={{
                     fontSize: '1.5rem',
                     fontStyle: 'Bold',

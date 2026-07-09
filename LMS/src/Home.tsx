@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import AddBookDialog from "./AddBookDialog";
@@ -41,7 +41,8 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const fetchBooks = () =>{
+    const fetchBooks = async () =>{
+        setLoading(true)
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         axios.get(`${apiUrl}/books/fetch`).then((response) =>{
             if(response.data && response.data.length > 0){
@@ -107,6 +108,7 @@ function Home() {
             border: 0,
             outline: 'none',
         }}>
+            <LoadingOverlay open={loading} />
             <Header handleAddDialog = {() => setAddBookDialogOpen(true)} fetchData={filterBooks}/>
             { books && (<HomeCardLayout bookData = {booksDisplayed} email={email} fetchData={filterBooks} setIsBookDetailsOpen={setIsBookDetailsOpen}/>)}
             { error && (<Box sx={{height: '100%', width: '100%', display: 'flex', textAlign: "center", justifyItems: "center", fontSize: '2rem'}}>No Item Found</Box>)}
