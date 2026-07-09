@@ -73,7 +73,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
         if(isEmailVerified){
             if(!isAdmin && otp.trim() !== ''){
-                await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
+                await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': 'Pending', "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': false}).then((response)=>{
                     if(response.data.Authenticated){
                         alert('Book Request for' + bookDetails.book_title + ' Sent Successfully.')
                     }
@@ -82,17 +82,17 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                 })
             }
             else if(isAdmin && otp.trim() !== '' && !signUp){
-                    await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
+                    await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': 'Issued', 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
-                        alert(bookDetails.book_title + ' is issued to ' + issueName)
+                        alert(bookDetails.book_title + ' is issued to ' + issueEmail)
                     }}).catch((error)=>{
                         console.log("Error While Issueing Book" + error.response?.data)
                     })
             }
             else if(isAdmin && signUp){
-                await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName, 'user_email': issueEmail, 'user_mobile': issueMobile, 'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': bookDetails.book_status, 'issue_by': user_email, "signup": true, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
+                await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName, 'user_email': issueEmail, 'user_mobile': issueMobile, 'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': 'Issued', 'issue_by': user_email, "signup": true, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
-                        alert(bookDetails.book_title + ' is issued to ' + issueName)
+                        alert(bookDetails.book_title + ' is issued to ' + issueEmail)
                     }}).catch((error)=>{
                         console.log("Error While Verifying Email" + error.response?.data)
                     })
@@ -388,11 +388,11 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                 borderBottom: '3px solid',
                 borderColor: '#000000'
             }}>
-                {(isAdmin && signUp) ? "SignUp" : "OTP Verification"}
+                {(isAdmin && signUp && !isEmailVerified) ? "SignUp" : "OTP Verification"}
             </DialogTitle>
 
             <DialogContent sx={{ px:'24px', pt: '20px', pb: '9px' }}>
-                {(isAdmin && signUp) && (<TextField placeholder='Name'
+                {(isAdmin && signUp && !isEmailVerified) && (<TextField placeholder='Name'
                     fullWidth 
                     value={issueName}
                     onChange={(e)=>setIssueName(e.target.value)}
@@ -424,7 +424,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                         bordercolor: 'primary.main',
                         }, 
                 }}/>
-                {(isAdmin && signUp) && (<TextField placeholder='Mobile'
+                {(isAdmin && signUp && !isEmailVerified) && (<TextField placeholder='Mobile'
                     type="tel"
                     fullWidth 
                     value={issueMobile}
@@ -455,7 +455,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                     }
                 }}
                     sx={{ mt: 0.5, fontWeight: 'semibold', textAlign: 'right', color: 'primary.main', fontSize: '0.75rem', '&:hover': { color: '#09BF18', textDecoration: 'underline' }, cursor: 'pointer',}}>
-                        {(isAdmin && signUp) ? "OTP Verification" : "Add Account"}
+                        {isEmailVerified ? "Resend OTP" : (isAdmin && signUp) ? "OTP Verification" : "Add Account"}
                     </Typography>)}
             </DialogContent>
             <DialogActions sx={{

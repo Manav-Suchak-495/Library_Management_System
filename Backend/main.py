@@ -142,6 +142,10 @@ def send_email(email: string, name: string, otp: string, password: string, role:
             print(f"OTP sent successfully to {email}!")
             Token = create_jwt_token(user_email=email, user_name=name, otp=otp, user_role=role)
             return {"Authenticated" : True, "Token" : Token}
+        if password and password != '':
+            print(f"Login Credentials sent successfully to {email}!")
+            Token = create_jwt_token(user_email=email, user_name=name, otp=otp, user_role=role)
+            return {"Authenticated" : True, "Token" : Token}
     except Exception as e:
         print(f"Failed to send email: {e}")
         return None
@@ -216,8 +220,8 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                 user_password = generate_secure_password()
                 try: 
                     with db.cursor() as cursor:
-                        cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile, user_role) VALUES(%s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile, 'Reader'))
-                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
+                        cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile, user_role) VALUES(%s, %s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile, 'Reader'))
+                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, user_email, issue_isbn, issue_title, issue_status, issue_by))
                         cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
                         db.commit()
                         return send_email( email=user_email, name='', role=Token.get('user_name'), otp='', password=user_password)
