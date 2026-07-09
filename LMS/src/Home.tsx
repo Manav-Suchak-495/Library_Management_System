@@ -66,7 +66,7 @@ function Home() {
                 setBookDetails( books.filter(book => book.book_isbn.includes(cleanTerm))[0])
             }
             else{
-                setBooksDisplayed( books.filter(book => book.book_title.toLowerCase().includes(cleanTerm) ||book.book_author.toLowerCase().includes(cleanTerm) || book.book_isbn.includes(cleanTerm)))
+                setBooksDisplayed( books.filter(book => book.book_title.toLowerCase().includes(cleanTerm) ||book.book_author.toLowerCase().includes(cleanTerm) || book.book_isbn.includes(cleanTerm) || book.book_category.includes(cleanTerm)))
             }
         }
     }
