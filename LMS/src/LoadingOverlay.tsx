@@ -16,8 +16,7 @@ const LoadingOverlay = ({ open }: LoadingOverlayProps) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(255,255,255,0.6)',
-        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(255,255,255,0.2)',
       }}
     >
       <CircularProgress size={48} sx={{ color: '#27CF54' }} />
