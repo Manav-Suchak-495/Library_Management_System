@@ -8,7 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from "axios";
 interface Header_Interface {
     handleAddDialog: () => void;
-    fetchData: ({ queryFilter }: { queryFilter: string }) => void
+    fetchData: ({ searchValue, bookDetails }: { searchValue: string, bookDetails: boolean }) => void
 }
 function Header( { handleAddDialog, fetchData } : Header_Interface ){
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
@@ -70,7 +70,17 @@ function Header( { handleAddDialog, fetchData } : Header_Interface ){
                 value={search}
                 onChange={(e)=> {
                     setSearch(e.target.value)
-                    fetchData({"queryFilter":e.target.value})
+                    fetchData({"searchValue": e.target.value, bookDetails: false})
+                }}
+                onBlur={(e)=>{
+                    if(e.target.value !== ''){
+                        setSearch(e.target.value)
+                        fetchData({"searchValue": e.target.value, bookDetails: false})
+                    }
+                    else{
+                        setSearch('')
+                        fetchData({"searchValue": '', bookDetails: false})
+                    }
                 }}
                 slotProps={{
                 input: {

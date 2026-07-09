@@ -323,21 +323,14 @@ def add_books(payload: dict, response: Response, db: psycopg2.extensions.connect
     
     return {"success": True, "message": f"Book '{title}' successfully added to the catalog."}
 
-@app.post("/books/fetch")
-def getBookData(payload: dict,db: psycopg2.extensions.connection = Depends(get_db_connection)):
+@app.get("/books/fetch")
+def getBookData(db: psycopg2.extensions.connection = Depends(get_db_connection)):
     try:
         with db.cursor() as cursor:
-            if payload.get("queryFilter") == '' or not payload.get("queryFilter") :
-                cursor.execute("SELECT * FROM book_data")
-                books = cursor.fetchall()
-                cursor.close()
-                return books
-            else :
-                queryFilter = payload.get("queryFilter")
-                cursor.execute("SELECT * FROM book_data WHERE book_title LIKE %s OR book_author LIKE %s OR book_isbn LIKE %s OR book_category LIKE %s OR book_publisher LIKE %s OR book_status LIKE %s;",(f"%{queryFilter}%", f"%{queryFilter}%", f"%{queryFilter}%", f"%{queryFilter}%", f"%{queryFilter}%",  f"%{queryFilter}%"))
-                books = cursor.fetchall()
-                cursor.close()
-                return books
+            cursor.execute("SELECT * FROM book_data ORDER BY RANDOM();")
+            books = cursor.fetchall()
+            cursor.close()
+            return books
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

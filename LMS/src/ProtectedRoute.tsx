@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
-import { Token } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import LoadingOverlay from './LoadingOverlay';
 
 const ProtectedRoute = () => {
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,13 @@ const ProtectedRoute = () => {
       });
   }, []);
 
-  if (loading) return <div>Loading Session...</div>;
+  if (loading) {
+    return (
+      <Box sx={{ position: 'relative', minHeight: '100dvh' }}>
+        <LoadingOverlay open={true} />
+      </Box>
+    );
+  }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
 };

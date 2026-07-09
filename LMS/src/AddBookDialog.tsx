@@ -2,10 +2,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, S
 import { useState } from 'react';
 import axios from 'axios';
 
-interface MuiAddBookDialogProps {
+interface AddBookDialogInterface {
   open: boolean;
   onClose: () => void;
   user_email: string;
+  fetchBooks: () => void;
 }
 
 interface BookDataInterface {
@@ -25,42 +26,44 @@ interface FormErrors {
       publisher?: string;
       description?: string;
     }
-const AddBookDialog = ({ open, onClose, user_email }: MuiAddBookDialogProps) => {
-  
-const categories = [
-  "Action & Adventure",
-  "Architecture",
-  "Arts & Photography",
-  "Biography",
-  "Business & Economics",
-  "Comic",
-  "Computer Science & IT",
-  "Engineering & Technology",
-  "Fantasy",
-  "History",
-  "Journals",
-  "Languages & Linguistics",
-  "Manga",
-  "Mathematics",
-  "Medical & Health Sciences",
-  "Mystery & Thriller",
-  "Non-Fiction",
-  "Philosophy & Psychology",
-  "Romance",
-  "Sci-Fi",
-  "Science",
-  "Technology"
-];
-    const [bookData, setBookData] = useState<BookDataInterface>({
-      isbn: '',
-      title: '',
-      author: '',
-      publisher: '',
-      category: 'Journals',
-      copyCount: '1',
-      finalCopyCount: 1,
-      description: ''
-    });
+const AddBookDialog = ({ open, onClose, user_email, fetchBooks }: AddBookDialogInterface) => {
+  const categories = [
+    "Action & Adventure",
+    "Architecture",
+    "Arts & Photography",
+    "Biography",
+    "Business & Economics",
+    "Comedy",
+    "Comic",
+    "Computer Science & IT",
+    "Engineering & Technology",
+    "Fantasy",
+    "Fiction",
+    "History",
+    "Horror",
+    "Journals",
+    "Languages & Linguistics",
+    "Manga",
+    "Mathematics",
+    "Medical & Health Sciences",
+    "Mystery & Thriller",
+    "Non-Fiction",
+    "Philosophy & Psychology",
+    "Romance",
+    "Sci-Fi",
+    "Science",
+    "Technology"
+  ];
+  const [bookData, setBookData] = useState<BookDataInterface>({
+    isbn: '',
+    title: '',
+    author: '',
+    publisher: '',
+    category: 'Journals',
+    copyCount: '1',
+    finalCopyCount: 1,
+    description: ''
+  });
     const [formErrors, setFormErrors] = useState<FormErrors>({});
     
 
@@ -109,6 +112,7 @@ const categories = [
             alert("Book added successfully!");
             setBookData({ isbn: '', title: '', author: '', publisher: '', category: '', copyCount: '1', finalCopyCount: 1, description: '' });
             setFormErrors({});
+            fetchBooks()
             onClose()
         } catch (err) {
             console.error("Submission failed", err);

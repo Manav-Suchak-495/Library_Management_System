@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogActions, Button, Box, Typography, DialogTitle, TextField } from '@mui/material';
+import { Dialog, DialogContent, DialogActions, Button, Box, Typography, DialogTitle, TextField, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
 import { useEffect, useState } from 'react';
@@ -32,9 +32,27 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
     const [otp, setOtp] = useState('')
     const [isEmailVerified, setIsEmailVerified] = useState(false)
     const [token, setToken] = useState('')
+    const [isLoading, setIsLoading] = useState(Boolean(open))
     const assets = {
           Logo_Black: Logo_Black,
     };
+    useEffect(() => {
+        if (!open) {
+            setIsLoading(true);
+            return;
+        }
+
+        const hasBookData = Boolean(bookDetails?.book_isbn || bookDetails?.book_title || bookDetails?.book_description);
+
+        if (!hasBookData) {
+            setIsLoading(true);
+            return;
+        }
+
+        const timer = window.setTimeout(() => setIsLoading(false), 250);
+        return () => window.clearTimeout(timer);
+    }, [open, bookDetails?.book_isbn, bookDetails?.book_title, bookDetails?.book_description]);
+
     const handleBookDetail = async () =>{
         setIssueDialog(true);
         if(!isAdmin){
@@ -113,7 +131,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
 
     return (
         <Dialog open={open} 
-        onClose={() => {onClose}} 
+        onClose={isLoading ? undefined : onClose} 
         fullWidth maxWidth={false} 
         disableRestoreFocus
         slotProps={{
@@ -128,7 +146,21 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
             }
         }}>
         
-        <DialogContent >
+        <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+            {isLoading && (
+                <Box sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    zIndex: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'transparent',
+                }}>
+                    {/*<CircularProgress size={48} sx={{ color: '#27CF54' }} />*/}
+                </Box>
+            )}
+        <DialogContent sx={{ position: 'relative', filter: isLoading ? 'blur(1px)' : 'none' }}>
             <Box sx={{
                 width: '100%',
                 textAlign: 'center',
@@ -328,6 +360,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
             </Button>
         </Box>
         </DialogActions>
+        </Box>
 
         <Dialog open={issueDialog} 
         onClose={(e,reason)=>{ 

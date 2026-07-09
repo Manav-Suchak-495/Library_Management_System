@@ -12,7 +12,7 @@ interface BookDataInterface {
     book_description: string;
     book_status: string;
 }
-function Home_CardLayout({bookData, email, fetchData, setIsBookDetailsOpen}:{bookData:  BookDataInterface[], email: string, fetchData: (querFilter:{ queryFilter: string }) => void, setIsBookDetailsOpen: (arg: boolean) => void}){
+function Home_CardLayout({bookData, email, fetchData, setIsBookDetailsOpen}:{bookData:  BookDataInterface[], email: string, fetchData: ({searchValue, bookDetails}:{ searchValue: string, bookDetails: boolean }) => void, setIsBookDetailsOpen: (arg: boolean) => void}){
     
   const assets = {
         Logo_Black: Logo_Black,
@@ -38,8 +38,8 @@ function Home_CardLayout({bookData, email, fetchData, setIsBookDetailsOpen}:{boo
           <Box
             key={book.book_isbn}
             onClick={() => {
-              fetchData({queryFilter:book.book_isbn})
               setIsBookDetailsOpen(true);
+              fetchData({searchValue:book.book_isbn, bookDetails: true})
             }}
             sx={{
               display: 'flex',

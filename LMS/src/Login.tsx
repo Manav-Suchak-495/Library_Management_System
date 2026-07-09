@@ -7,6 +7,7 @@ import Background from './assets/Background.png';
 import Logo_Black from './assets/Logo_Black_White.png';
 import Logo_Green_Black_White_Back from './assets/Logo_Green_Black_White_Back.png'
 import ForgotPasswordDialog from './ForgotPasswordDialog';
+import LoadingOverlay from './LoadingOverlay';
 
 function Login() {
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
@@ -14,6 +15,7 @@ function Login() {
     const [password, setPassword] = useState<string>('');
     const [forgotPasswordDialog, setForgotPasswordDialog] = useState(false);
     const [showError, setShowError] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const assets = {
         backgroundImage: Background,
@@ -37,6 +39,7 @@ function Login() {
         setPassword(event.target.value);
     };
     const handleLogin = async () => {
+            setIsSubmitting(true);
             const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
             await axios.post(`${apiUrl}/Login`, {"email": email, "password": password}).then((response) =>{
             console.log('Login successful');
@@ -47,11 +50,14 @@ function Login() {
             setShowError(true)
             setEmail('');
             setPassword('');
+        }).finally(() => {
+            setIsSubmitting(false);
         }) 
     };
   return (
     <Box
       sx={{
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -67,6 +73,7 @@ function Login() {
         backgroundSize: '350px',
         backgroundAttachment: 'fixed',
           }}>
+        <LoadingOverlay open={isSubmitting} />
         {(isAndroid && 
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', width: '100%', backgroundColor: '#FFFFFF',  }}>
             <Box component="img" 
@@ -185,6 +192,7 @@ function Login() {
             <Button color='primary'
                 variant='contained' 
                 onClick={handleLogin}
+                disabled={isSubmitting}
                 sx={{ mt: 3,
                     mb: 5, 
                     width: '100%', 
