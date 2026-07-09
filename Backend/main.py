@@ -211,7 +211,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
             issue_by = payload.get('issue_by')
             if payload.get("signup") and payload.get("issue"):
                 user_email = payload.get('user_email')
-                user_name = payload.get('user_name')
+                user_name = " ".join(payload.get('user_name').split()).capitalize()
                 user_mobile = payload.get('user_mobile')
                 user_password = generate_secure_password()
                 try: 
@@ -294,14 +294,14 @@ def verify_admin(payload: dict):
 @app.post("/books/add")
 def add_books(payload: dict, response: Response, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     isbn = payload.get("isbn").strip()
-    title = " ".join(payload.get("title").split())
-    author = " ".join(payload.get("author").split())
-    publisher = " ".join(payload.get("publisher").split()).title()
+    title = " ".join(payload.get("title").split()).capitalize()
+    author = " ".join(payload.get("author").split()).capitalize()
+    publisher = " ".join(payload.get("publisher").split()).title().capitalize()
     category = payload.get("category")
     copy_count = payload.get("finalCopyCount", 1) 
     issued_count = payload.get("issuedCount", 0)
     book_status = payload.get("status")
-    book_description = payload.get("description").strip() if payload.get("description") else "No Description"
+    book_description = payload.get("description").strip() if payload.get("description") or payload.get("desciption") != '' else "No Description"
     added_by = payload.get("addedBy")
     try:
         with db.cursor() as cursor:
