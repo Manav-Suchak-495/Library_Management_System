@@ -6,6 +6,7 @@ import axios from "axios";
 import HomeCardLayout from "./HomeCardLayout";
 import BookDetailsDialog from "./BookDetailsDialog";
 import LoadingOverlay from "./LoadingOverlay";
+import HistoryDialog from "./HistoryDialog";
 
 interface BookDataInterface {
     book_isbn: string;
@@ -26,6 +27,7 @@ function Home() {
     const [booksDisplayed, setBooksDisplayed] = useState<BookDataInterface[]>([])
     const [addBookDialogOpen, setAddBookDialogOpen] = useState<boolean>(false);
     const [isBookDetailsOpen, setIsBookDetailsOpen] = useState<boolean>(false);
+    const [isHistoryDialog, setIsHistoryDialog] = useState(false)
     const [books, setBooks] = useState<BookDataInterface[]>([])
     const [bookDetails, setBookDetails] = useState<BookDataInterface>({
         book_isbn: '',
@@ -109,13 +111,14 @@ function Home() {
             outline: 'none',
         }}>
             <LoadingOverlay open={loading} />
-            <Header handleAddDialog = {() => setAddBookDialogOpen(true)} fetchData={filterBooks}/>
+            <Header handleAddDialog = {() => setAddBookDialogOpen(true)} handleHistoryDialog={() => setIsHistoryDialog(true)} fetchData={filterBooks}/>
             { books && (<HomeCardLayout bookData = {booksDisplayed} email={email} fetchData={filterBooks} setIsBookDetailsOpen={setIsBookDetailsOpen}/>)}
             { error && (<Box sx={{height: '100%', width: '100%', display: 'flex', textAlign: "center", justifyItems: "center", fontSize: '2rem'}}>No Item Found</Box>)}
             { addBookDialogOpen && (<AddBookDialog open = {addBookDialogOpen} onClose = {() => {setAddBookDialogOpen(false);}} user_email={email} fetchBooks={fetchBooks}/> )}
-            {isBookDetailsOpen &&(<BookDetailsDialog open = {isBookDetailsOpen} 
+            { isBookDetailsOpen && (<BookDetailsDialog open = {isBookDetailsOpen} 
                 onClose={()=> {setIsBookDetailsOpen(false); setBookDetails({book_isbn: '',book_title: '',book_author: '',book_publisher: '',book_category: '',copy_count: 0,issued_count: 0,book_description: '',book_status: ''})}}
                 bookDetails={bookDetails} user_email={email} isAdmin={isAdmin}/>)}
+            { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => setIsHistoryDialog(false)} user_email={email} isAdmin={isAdmin} />)}
         </Box>
     );
 }export default Home;

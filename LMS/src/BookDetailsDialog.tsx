@@ -16,15 +16,15 @@ interface BookDataInterface {
     book_status: string;
 }
 
-interface MuiAddBookDialogProps {
-  open: boolean;
-  onClose: () => void;
-  bookDetails : BookDataInterface;
-  user_email: string;
-  isAdmin: boolean;
+interface BookDetailsDialogInterface {
+    open: boolean;
+    onClose: () => void;
+    bookDetails : BookDataInterface;
+    user_email: string;
+    isAdmin: boolean;
 }
 
-const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }: MuiAddBookDialogProps) => {
+const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }: BookDetailsDialogInterface) => {
     const [issueDialog, setIssueDialog] = useState(false);
     const [signUp, setSignUp] = useState(false)
     const [issueName, setIssueName] = useState('');

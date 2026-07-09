@@ -8,9 +8,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from "axios";
 interface Header_Interface {
     handleAddDialog: () => void;
+    handleHistoryDialog: () => void;
     fetchData: ({ searchValue, bookDetails }: { searchValue: string, bookDetails: boolean }) => void
 }
-function Header( { handleAddDialog, fetchData } : Header_Interface ){
+function Header( { handleAddDialog, handleHistoryDialog, fetchData } : Header_Interface ){
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
     const [search, setSearch] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
@@ -128,7 +129,8 @@ function Header( { handleAddDialog, fetchData } : Header_Interface ){
                 }}>
                 <AddIcon sx={{ stroke: "#000000", strokeWidth: 0.18}}/>
                 </Button>)}
-                <Button sx={{
+                <Button onClick={handleHistoryDialog}
+                sx={{
                 height: {xs:'60px', sm: '60px', md: '40px', lg:'45px'},
                 width: {xs:'64px', sm: '64px', md: '40px', lg:'45px'},
                 aspectRatio: '1/1',
