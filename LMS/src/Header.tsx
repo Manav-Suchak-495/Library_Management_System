@@ -9,9 +9,10 @@ import axios from "axios";
 interface Header_Interface {
     handleAddDialog: () => void;
     handleHistoryDialog: () => void;
-    fetchData: ({ searchValue, bookDetails }: { searchValue: string, bookDetails: boolean }) => void
+    fetchBookData: ({ searchValue, bookDetails }: { searchValue: string, bookDetails: boolean }) => void;
+    fetchIssueData: () => void
 }
-function Header( { handleAddDialog, handleHistoryDialog, fetchData } : Header_Interface ){
+function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIssueData } : Header_Interface ){
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
     const [search, setSearch] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
@@ -71,16 +72,16 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchData } : Header_In
                 value={search}
                 onChange={(e)=> {
                     setSearch(e.target.value)
-                    fetchData({"searchValue": e.target.value, bookDetails: false})
+                    fetchBookData({"searchValue": e.target.value, bookDetails: false})
                 }}
                 onBlur={(e)=>{
                     if(e.target.value !== ''){
                         setSearch(e.target.value)
-                        fetchData({"searchValue": e.target.value, bookDetails: false})
+                        fetchBookData({"searchValue": e.target.value, bookDetails: false})
                     }
                     else{
                         setSearch('')
-                        fetchData({"searchValue": '', bookDetails: false})
+                        fetchBookData({"searchValue": '', bookDetails: false})
                     }
                 }}
                 slotProps={{
@@ -129,7 +130,10 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchData } : Header_In
                 }}>
                 <AddIcon sx={{ stroke: "#000000", strokeWidth: 0.18}}/>
                 </Button>)}
-                <Button onClick={handleHistoryDialog}
+                <Button onClick={()=>{
+                    handleHistoryDialog()
+                    fetchIssueData()
+                }}
                 sx={{
                 height: {xs:'60px', sm: '60px', md: '40px', lg:'45px'},
                 width: {xs:'64px', sm: '64px', md: '40px', lg:'45px'},

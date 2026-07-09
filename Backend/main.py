@@ -344,6 +344,28 @@ def getBookData(db: psycopg2.extensions.connection = Depends(get_db_connection))
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch books from database: {str(e)}"
         )
+    
+@app.post("/issue/fetch")
+def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
+    try:
+        if payload.get('issue_to') and payload.get('issue_to') != '':
+            with db.cursor() as cursor:
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ;", (payload.get('issue_to'),))
+                issue_data = cursor.fetchall()
+                cursor.close()
+                return issue_data
+        else:
+            with db.cursor() as cursor:
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at::text, return_by, return_at::text FROM issue_data;")
+                issue_data = cursor.fetchall()
+                cursor.close()
+                return issue_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch books from database: {str(e)}"
+        )
+
 
     
 def create_jwt_token(user_email: string, user_name: string, user_role: string, otp: int):

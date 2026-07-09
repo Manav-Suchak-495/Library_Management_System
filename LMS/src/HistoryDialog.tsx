@@ -1,16 +1,28 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, Typography } from "@mui/material"
 import { useEffect, useState } from "react";
 import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
-import { ArrowBack, ArrowBackIos } from "@mui/icons-material";
+import { ArrowBackIos, AutoStoriesRounded, ClassOutlined, LibraryAddCheckRounded, MoveToInboxRounded} from "@mui/icons-material";
 
 interface HistoryBookDialogInterface{
     open: boolean;
     onClose: () => void;
     user_email: string;
     isAdmin: boolean;
+    issueData: IssueDataInterface[]
+}
+interface IssueDataInterface {
+    issue_id: string;
+    issue_isbn: string;
+    issue_title: string;
+    issue_to: string;
+    issue_status: string;
+    issue_by: string;
+    issue_at: string;
+    return_by: string;
+    return_at: string;
 }
 
-const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialogInterface)=>{
+const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: HistoryBookDialogInterface)=>{
     const [isLoading, setIsLoading] = useState(Boolean(open))
 
     const assets = {
@@ -41,8 +53,8 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialo
         slotProps={{
             paper: {
                 sx: {
-                    minHeight: {xs: '575px',sm: '575px', md:'565px', lg: '575px'},
-                    width: {xs: '100%', sm: '375px', md: '370px', lg: '375px'}, 
+                    minHeight: {xs: '575px',sm: '575px', md:'500px', lg: '555px'},
+                    width: {xs: '100%', sm: '375px', md: '325px', lg: '360px'}, 
                     maxWidth: 'calc(100% - 32px)',
                     margin: 'auto',
                     borderRadius: 2.7,
@@ -75,7 +87,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialo
                         height: {xs: 48, sm: 48, md: 40, lg: 40},
                         width: 'auto',
                         backgroundColor: '#000000',
-                        borderRadius: 3,
+                        borderRadius: 2.7,
                     }}>
                         <ArrowBackIos sx={{
                             fontSize: '1rem'
@@ -88,35 +100,32 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialo
                         alignContent: 'center',
                         backgroundColor: '#000000',
                         color: '#ffffff',
-                        mb: 1,
                         borderTopLeftRadius: 0,
-                        borderTopRightRadius: 2,
+                        borderTopRightRadius: 2.7,
                         fontSize: {xs: '1.1rem', sm: '1.1rem', md: '1.1rem', lg: '1.1rem'}
                     }}>
                         History
                     </Box>
                 </Box>
-
-                <Box sx={{
-                    flexGrow: 1,
-                    display: 'flex',
-                    flexDirection:'column',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    
-                }}>
-                    
-                </Box>
-                <Box component='img'
-                    src={assets.Logo_Black}
-                    sx={{ 
-                    width: '100%', 
-                    height: { xs: '185px', sm: '180px', md: '155px', lg: '165px'}, 
-                    bgcolor: 'transparent', 
-                    mb: 1,
-                    objectFit: 'contain',
-                    borderRadius: 1,
-                }}/>
+                {issueData.map((issueDetail)=>(
+                    <Box sx={{
+                        width: '100%',
+                        height: '70px',
+                        backgroundColor: '#ffffff',
+                        borderBottom: '3px solid #000000'
+                    }}>
+                        <Box 
+                            sx={{ 
+                            width: '100px', 
+                            height: { xs: '70px', sm: '70px', md: '70px', lg: '70px'}, 
+                            bgcolor: 'transparent', 
+                            mb: 1,
+                            objectFit: 'contain',
+                        }}>
+                            <MoveToInboxRounded sx={{ fontSize: 48}}/>
+                        </Box>
+                    </Box>
+                ))}
                 
             </DialogContent>
         </Box>
