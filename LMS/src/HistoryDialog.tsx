@@ -1,6 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, Typography } from "@mui/material"
 import { useEffect, useState } from "react";
 import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
+import { ArrowBack, ArrowBackIos } from "@mui/icons-material";
 
 interface HistoryBookDialogInterface{
     open: boolean;
@@ -40,8 +41,8 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialo
         slotProps={{
             paper: {
                 sx: {
-                    minHeight: {xs: '180px',sm: '200px', md:'220px', lg: '575px'},
-                    width: {xs: '400px', sm: '400px', md: '340px', lg: '375px'}, 
+                    minHeight: {xs: '575px',sm: '575px', md:'565px', lg: '575px'},
+                    width: {xs: '100%', sm: '375px', md: '370px', lg: '375px'}, 
                     maxWidth: 'calc(100% - 32px)',
                     margin: 'auto',
                     borderRadius: 2.7,
@@ -64,17 +65,36 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin }: HistoryBookDialo
             )}
             <DialogContent sx={{ padding: 0}}>
                 <Box sx={{
-                    width: '100%',
-                    textAlign: 'center',
-                    backgroundColor: '#000000',
-                    color: '#ffffff',
-                    py: 1,
-                    mb: 1,
-                    borderTopLeftRadius: 2,
-                    borderTopRightRadius: 2,
-                    fontSize: {xs: '1rem', sm: '1rem', md: '1rem', lg: '1rem'}
+                    display: "flex",
+                    direction: "row"
                 }}>
-                    History
+                    <Button onClick={()=>onClose()} 
+                    sx={{
+                        position: 'fixed',
+                        zIndex: 1000,
+                        height: {xs: 48, sm: 48, md: 40, lg: 40},
+                        width: 'auto',
+                        backgroundColor: '#000000',
+                        borderRadius: 3,
+                    }}>
+                        <ArrowBackIos sx={{
+                            fontSize: '1rem'
+                        }}/>
+                    </Button>
+                    <Box sx={{
+                        height: {xs: 48, sm: 48, md: 40, lg: 40},
+                        width: '100%',
+                        textAlign: 'center',
+                        alignContent: 'center',
+                        backgroundColor: '#000000',
+                        color: '#ffffff',
+                        mb: 1,
+                        borderTopLeftRadius: 0,
+                        borderTopRightRadius: 2,
+                        fontSize: {xs: '1.1rem', sm: '1.1rem', md: '1.1rem', lg: '1.1rem'}
+                    }}>
+                        History
+                    </Box>
                 </Box>
 
                 <Box sx={{
