@@ -147,4 +147,5 @@ function Home() {
             { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => setIsHistoryDialog(false)} user_email={email} isAdmin={isAdmin} issueData={issueData}/>)}
         </Box>
     );
-}export default Home;
+}
+export default Home;

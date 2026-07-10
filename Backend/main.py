@@ -350,13 +350,13 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
     try:
         if payload.get('issue_to') and payload.get('issue_to') != '':
             with db.cursor() as cursor:
-                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ;", (payload.get('issue_to'),))
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 WHEN 'Rejected' THEN 3 ELSE 4 END ASC ;", (payload.get('issue_to'),))
                 issue_data = cursor.fetchall()
                 cursor.close()
                 return issue_data
         else:
             with db.cursor() as cursor:
-                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at::text, return_by, return_at::text FROM issue_data;")
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at::text, return_by, return_at::text FROM issue_data ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 WHEN 'Rejected' THEN 3 ELSE 4 END ASC ;")
                 issue_data = cursor.fetchall()
                 cursor.close()
                 return issue_data
@@ -365,8 +365,6 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to fetch books from database: {str(e)}"
         )
-
-
     
 def create_jwt_token(user_email: string, user_name: string, user_role: string, otp: int):
     """Generates a secure, encrypted JWT token that expires in 1 hour"""

@@ -153,3 +153,4 @@ node_modules/
 dist/
 build/
 .env.local
+interface.txt
