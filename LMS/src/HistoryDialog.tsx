@@ -57,16 +57,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
         slotProps={{
             paper: {
                 sx: {
-                    minHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '555px'},
-                    width: {xs: '100dvw', sm: '385px', md: '325px', lg: '360px'}, 
+                    minHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+                    maxHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+                    width: {xs: '100dvw', sm: '385px', md: '315px', lg: '325px'}, 
                     maxWidth: 'none',
                     margin: 'auto',
-                    borderRadius: {xs: 0, sm:2.7},
+                    borderRadius: {xs: 0, sm: 2.7},
+                    backgroundColor: '#FFFFFF',
                 }
             }
         }}>
         
-        <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'relative',
+            minHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+            maxHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+            width: {xs: '100dvw', sm: '385px', md: '315px', lg: '325px'}, 
+            maxWidth: 'none', 
+        }}>
             {isLoading &&  (
                 <Box sx={{
                     position: 'absolute',
@@ -79,7 +86,11 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                 }}>
                 </Box>
             )}
-            <DialogContent sx={{ padding: 0}}>
+            <DialogContent sx={{ padding: 0, overflow: 'auto', 
+                minHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+                maxHeight: {xs: '100dvh',sm: '625px', md:'500px', lg: '506.5px'},
+                width: {xs: '100dvw', sm: '385px', md: '315px', lg: '325px'}, 
+                maxWidth: 'none',}}>
                 <Box sx={{
                     display: "flex",
                     direction: "row",
@@ -100,10 +111,10 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                         position: isSearching ? '':'fixed',
                         zIndex: 1000,
                         alignItems: 'center',
-                        height: isSearching? {xs: 36, sm: 36, md: 32, lg: 32} : {xs: 48, sm: 48, md: 40, lg: 40},
-                        width: isSearching ? {xs: 36, sm: 36, md: 32, lg: 32} : {xs: 44, sm: 44, md: 40, lg: 40},
+                        height: isSearching? {xs: 40, sm: 40, md: 32, lg: 32} : {xs: 48, sm: 48, md: 40, lg: 40},
+                        width: isSearching ? {xs: 40, sm: 40, md: 32, lg: 32} : {xs: 48, sm: 48, md: 40, lg: 40},
                         pr: 1,
-                        minWidth: {xs: 40, sm: 44, md: 36, lg: 36},
+                        minWidth: {xs: 40, sm: 40, md: 36, lg: 36},
                         backgroundColor: isSearching ? 'transparent' : '#000000',
                         borderRadius: isSearching ? 8 : {xs: 0, sm:2.7},
                     }}>
@@ -135,9 +146,9 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                         sx={{
                         width: {xs: '100%', sm: '100%', md: '100%', lg:'100%'},
                         "& .MuiInputBase-root": { 
-                            height : {xs: '36px', sm: '36px', md: '32px', lg: '32px'}, 
+                            height : {xs: '40px', sm: '40px', md: '32px', lg: '32px'}, 
                             fontSize: {md: '1rem', lg: '1rem' } ,
-                            borderRadius: {xs:3, sm:3, md: 2.25, lg: 2.25 },
+                            borderRadius: {xs:2.5, sm:2.5, md: 2.25, lg: 2.25 },
                             backgroundColor: '#F5F5F5',
                             border: '0'
                         }, 
@@ -155,7 +166,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                         backgroundColor: '#000000',
                         color: '#ffffff',
                         borderTopLeftRadius: 0,
-                        borderTopRightRadius: 2.7,
+                        borderTopRightRadius: {xs: 0, sm: 2.7},
                         fontSize: {xs: '1.1rem', sm: '1.1rem', md: '1.1rem', lg: '1.1rem'}
                     }}>
                         History
@@ -181,48 +192,30 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                     </Button>)}
                 </Box>
                 {issueData.map((issueDetail)=>(
-                    <Box key={issueDetail.issue_id}
-                     sx={{
-                        width: '100%',
-                        height: '65px',
-                        backgroundColor: '#ffffff',
-                        borderBottom: '3px solid #000000'
-                    }}>
-                        <Box 
-                            sx={{ 
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: '60px', 
-                            height: { xs: '65px', sm: '65px', md: '65px', lg: '65px'}, 
-                            bgcolor: 'transparent', 
-                            mb: 1,
-                            objectFit: 'contain',
-                        }}>
-                            <BookmarkAddRounded sx={{ fontSize: '38px'}}/>
-                        </Box>
-                    </Box>
-                ))}
-                <Box 
+                    <Box 
                      sx={{
                         display: 'flex',
                         width: '100%',
-                        height: '65px',
-                        backgroundColor: '#ffffff',
-                        borderBottom: '3px solid #000000'
+                        height: {xs: '67.5px', sm: '65px',md:'55px', lg: '67.5px'},
+                        backgroundColor: '#0ff',
+                        borderBottom: '2.5px solid #000000',
+                        mt: 0
                     }}>
                         <Box 
                             sx={{ 
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            width: '60px', 
-                            height: { xs: '65px', sm: '65px', md: '65px', lg: '65px'}, 
-                            bgcolor: 'transparent', 
-                            mb: 1,
+                            width: {xs: '50px', sm: '47px',md:'42px', lg: '50px'},
+                            height: { xs: '50px', sm: '47px', md: '42px', lg: '50px'}, 
+                            bgcolor: '#F7FFF9', 
                             objectFit: 'contain',
+                            boxShadow: '0px 0px 4px rgba(0,0,0,0.18)',
+                            borderRadius: 2.7,
+                            mt: {xs: '8.5px', sm: '7px',md: '6px', lg: '8.5px'},
+                            ml: {xs: '10px', sm: '8.5px',md: '7px', lg: '10px'}
                         }}>
-                            <BookmarkAddRounded sx={{ fontSize: '38px'}}/>
+                            <BookmarkAddRounded sx={{ fontSize: {md: '32px', lg: '32px'}}}/>
                         </Box>
                         <Box sx={{
                             display: 'flex',
@@ -230,25 +223,35 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                         }}>
                             <Box
                             sx={{ 
+                                height: {md: '16px',lg: '17px'},
+                                lineHeight: 1,
                                 fontWeight: 'bold', 
-                                fontSize: {xs: '1rem', sm: '1rem', md: '0.9rem', lg: '0.9rem'},
-                                ml: 0.5,
+                                fontSize: {xs: '1rem', sm: '1rem', md: '0.75rem', lg: '0.85rem'},
+                                ml: 1.25,
+                                mt: {md: 1.45, lg:2.05},
+                                //backgroundColor: '#000000',
                                 color: '#27CF54',
                                 overflow: 'hidden',
                             }}>
-                                One Piece
+                                Atomic Habits
                             </Box>
                             <Box
                             sx={{  
-                                fontSize: {xs: '1rem', sm: '1rem', md: '0.8rem', lg: '0.8rem'},
-                                ml: 0.5,
+                                height: {md: '12px',lg:'12.5px'},
+                                lineHeight: 1,
+                                fontSize: {xs: '1rem', sm: '1rem', md: '0.6rem', lg: '0.65rem'},
+                                ml: 1.25,
+                                mt: {md: 0.25, lg:0.4},
                                 color: '#000000',
+                                //backgroundColor: '#000000',
                                 overflow: 'hidden',
                             }}>
-                                One Piece
+                                Manav Suchak
                             </Box>
                         </Box>
                     </Box>
+                ))}
+                
             </DialogContent>
         </Box>
         </Dialog>
