@@ -24,6 +24,7 @@ interface IssueDataInterface {
     issue_id: string;
     issue_isbn: string;
     issue_title: string;
+    issue_email: string;
     issue_to: string;
     issue_status: string;
     issue_by: string;

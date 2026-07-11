@@ -215,7 +215,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
             issue_by = payload.get('issue_by')
             if payload.get("signup") and payload.get("issue"):
                 user_email = payload.get('user_email')
-                user_name = " ".join(payload.get('user_name').split()).capitalize()
+                user_name = " ".join(payload.get('user_name').split()).title()
                 user_mobile = payload.get('user_mobile')
                 user_password = generate_secure_password()
                 try: 
@@ -302,9 +302,9 @@ def verify_admin(payload: dict):
 @app.post("/books/add")
 def add_books(payload: dict, response: Response, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     isbn = payload.get("isbn").strip()
-    title = " ".join(payload.get("title").split()).capitalize()
-    author = " ".join(payload.get("author").split()).capitalize()
-    publisher = " ".join(payload.get("publisher").split()).title().capitalize()
+    title = " ".join(payload.get("title").split()).title()
+    author = " ".join(payload.get("author").split()).title()
+    publisher = " ".join(payload.get("publisher").split()).title()
     category = payload.get("category")
     copy_count = payload.get("finalCopyCount", 1) 
     issued_count = payload.get("issuedCount", 0)
