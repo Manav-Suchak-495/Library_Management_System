@@ -22,9 +22,10 @@ interface BookDetailsDialogInterface {
     bookDetails : BookDataInterface;
     user_email: string;
     isAdmin: boolean;
+    fetchBooks: () => void;
 }
 
-const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }: BookDetailsDialogInterface) => {
+const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, fetchBooks }: BookDetailsDialogInterface) => {
     const [issueDialog, setIssueDialog] = useState(false);
     const [signUp, setSignUp] = useState(false)
     const [issueName, setIssueName] = useState('');
@@ -93,6 +94,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                 await axios.post(`${apiUrl}/verify-otp`, {'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': 'Issued', 'issue_by': user_email, "signup": false, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
                         alert(bookDetails.book_title + ' is issued to ' + issueEmail)
+                        fetchBooks()
                     }}).catch((error)=>{
                         console.log("Error While Issueing Book" + error.response?.data)
                     }).finally(()=>{
@@ -104,6 +106,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin }:
                 await axios.post(`${apiUrl}/verify-otp`, {'user_name': issueName, 'user_email': issueEmail, 'user_mobile': issueMobile, 'issue_email' : issueEmail, 'issue_to': issueName, 'issue_isbn': bookDetails.book_isbn, 'issue_title': bookDetails.book_title, 'issue_status': 'Issued', 'issue_by': user_email, "signup": true, "forgot": false, 'Token': token, 'otp': otp, 'issue': true}).then((response)=>{
                     if(response.data.Authenticated){
                         alert(bookDetails.book_title + ' is issued to ' + issueEmail)
+                        fetchBooks()
                     }}).catch((error)=>{
                         console.log("Error While Verifying Email" + error.response?.data)
                     }).finally(()=>{

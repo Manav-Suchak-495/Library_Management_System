@@ -2,13 +2,16 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAd
 import { useEffect, useState } from "react";
 import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
 import { ArrowBackIos, ArrowBackIosNewRounded, AutoStoriesRounded, BookmarkAdd, BookmarkAddedRounded, BookmarkAddRounded, BookmarkRemoveOutlined, BookOnlineRounded, ClassOutlined, CollectionsBookmarkOutlined, CollectionsBookmarkRounded, LibraryAddCheckRounded, MoveToInboxRounded, Search} from "@mui/icons-material";
+import axios from "axios";
 
 interface HistoryBookDialogInterface{
     open: boolean;
     onClose: () => void;
     user_email: string;
     isAdmin: boolean;
-    issueData: IssueDataInterface[]
+    issueData: IssueDataInterface[];
+    fetchIssueData: () => void;
+    fetchBooks: () => void;
 }
 interface IssueDataInterface {
     issue_id: string;
@@ -23,7 +26,7 @@ interface IssueDataInterface {
     return_at: string;
 }
 
-const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: HistoryBookDialogInterface)=>{
+const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBooks, fetchIssueData }: HistoryBookDialogInterface)=>{
     const[search, setSearch] = useState('')
     const [isSearching, setIsSearching] = useState(false);
     const [issueId, setIssueId] = useState('')
@@ -59,6 +62,35 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
             const timer = window.setTimeout(() => setIsLoading(false), 250);
             return () => window.clearTimeout(timer);*/
         }, [open]);//, bookDetails?.book_isbn, bookDetails?.book_title, bookDetails?.book_description]);
+    const handleIssueUpdate = async ()=>{
+        if(issueStatus != '' && (issueStatus == 'Pending' || issueStatus == 'Issued')){
+            setIsLoading(true);
+            var status = ''
+            if(issueStatus == 'Issued'){
+                status = 'Returned';
+            }
+            else if(issueStatus == 'Pending'){
+                status = 'Issued'
+
+            }
+            const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            await axios.post(`${apiUrl}/issue/update`, {'issue_status': issueStatus, 'issue_id': issueId, 'admin': user_email, 'issue_isbn': issueIsbn}).then((response)=>{
+                if(response.data.update){
+                    alert("Issue update successfull!");
+                    fetchBooks()
+                }    
+            }).catch((err)=>{
+                console.error("Update failed", err);
+            }).finally(()=>{
+                    setIsLoading(false);
+                    setIsIssueDetailsDialog(false)
+                    fetchIssueData()
+            })
+        }
+        else{
+            setIsIssueDetailsDialog(false)
+        }
+    }
 
     return(
         <>
@@ -533,7 +565,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData  }: Hist
                         Cancel
                     </Button>
 
-                    <Button
+                    <Button onClick={handleIssueUpdate}
                     sx={{
                         width: '100%',
                         borderRadius: 1.8,

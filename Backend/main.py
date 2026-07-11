@@ -316,6 +316,7 @@ def add_books(payload: dict, response: Response, db: psycopg2.extensions.connect
             cursor.execute("INSERT INTO book_data (book_isbn, book_title, book_author, book_publisher, book_category, copy_count, issued_count, book_status, book_description, added_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
                             (isbn, title, author, publisher, category, copy_count, issued_count, book_status, book_description, added_by))
             db.commit()
+            cursor.close()
     except UniqueViolation:
         db.rollback()
         raise HTTPException(
@@ -350,13 +351,13 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
     try:
         if payload.get('issue_to') and payload.get('issue_to') != '':
             with db.cursor() as cursor:
-                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 WHEN 'Rejected' THEN 3 ELSE 4 END ASC ;", (payload.get('issue_to'),))
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 ELSE 4 END ASC ;", (payload.get('issue_to'),))
                 issue_data = cursor.fetchall()
                 cursor.close()
                 return issue_data
         else:
             with db.cursor() as cursor:
-                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at::text, return_by, return_at::text FROM issue_data ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 WHEN 'Rejected' THEN 3 ELSE 4 END ASC ;")
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at::text, return_by, return_at::text FROM issue_data ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 ELSE 4 END ASC ;")
                 issue_data = cursor.fetchall()
                 cursor.close()
                 return issue_data
@@ -366,6 +367,29 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
             detail=f"Failed to fetch books from database: {str(e)}"
         )
     
+@app.post("/issue/update")
+def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
+    try:
+        if payload.get('issue_status') and payload.get('issue_status') != '' and payload.get('issue_status') == 'Pending':
+            with db.cursor() as cursor:
+                cursor.execute("UPDATE issue_data SET issue_status = %s, issue_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Issued', payload.get('admin'), payload.get('issue_id'), 'Issued'))
+                cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(payload.get('issue_isbn'),))
+                db.commit()
+                cursor.close()
+                return {'update': True}
+        if payload.get('issue_status') and payload.get('issue_status') != '' and payload.get('issue_status') == 'Issued':
+            with db.cursor() as cursor:
+                cursor.execute("UPDATE issue_data SET issue_status = %s, return_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Returned', payload.get('admin'), payload.get('issue_id'), 'Returned'))
+                cursor.execute("UPDATE book_data SET copy_count = copy_count + 1, issued_count = issued_count - 1 WHERE book_isbn = %s",(payload.get('issue_isbn'),))
+                db.commit()
+                cursor.close()
+                return {'update': True}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch books from database: {str(e)}"
+        )
+
 def create_jwt_token(user_email: string, user_name: string, user_role: string, otp: int):
     """Generates a secure, encrypted JWT token that expires in 1 hour"""
     if user_email and user_role and user_role != '':

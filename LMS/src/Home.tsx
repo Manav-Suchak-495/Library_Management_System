@@ -142,10 +142,10 @@ function Home() {
             { books && (<HomeCardLayout bookData = {booksDisplayed} email={email} fetchData={filterBooks} setIsBookDetailsOpen={setIsBookDetailsOpen}/>)}
             { error && (<Box sx={{height: '100%', width: '100%', display: 'flex', textAlign: "center", justifyItems: "center", fontSize: '2rem'}}>No Item Found</Box>)}
             { addBookDialogOpen && (<AddBookDialog open = {addBookDialogOpen} onClose = {() => {setAddBookDialogOpen(false);}} user_email={email} fetchBooks={fetchBooks}/> )}
-            { isBookDetailsOpen && (<BookDetailsDialog open = {isBookDetailsOpen} 
-                onClose={()=> {setIsBookDetailsOpen(false); setBookDetails({book_isbn: '',book_title: '',book_author: '',book_publisher: '',book_category: '',copy_count: 0,issued_count: 0,book_description: '',book_status: ''})}}
+            { isBookDetailsOpen && (<BookDetailsDialog open = {isBookDetailsOpen} fetchBooks={fetchBooks}
+                onClose={()=> {setIsBookDetailsOpen(false); setBookDetails({book_isbn: '',book_title: '',book_author: '',book_publisher: '',book_category: '',copy_count: 0,issued_count: 0,book_description: '',book_status: '',});}}
                 bookDetails={bookDetails} user_email={email} isAdmin={isAdmin}/>)}
-            { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => setIsHistoryDialog(false)} user_email={email} isAdmin={isAdmin} issueData={issueData}/>)}
+            { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => {setIsHistoryDialog(false)}} user_email={email} isAdmin={isAdmin} issueData={issueData} fetchBooks={fetchBooks} fetchIssueData={fetchIssueData}/>)}
         </Box>
     );
 }
