@@ -16,7 +16,6 @@ from datetime import datetime, timedelta, timezone
 from Auth import SECRET_KEY, ALGORITHM, load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, status, Response, Cookie, Request
 
-
 app = FastAPI()
 load_dotenv()
 
@@ -53,7 +52,6 @@ async def force_cors_preflight(request: Request, call_next):
     response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Accept"
     response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
-
 
 def get_db_connection():
     db_host = os.getenv("DB_HOST").strip()
@@ -152,7 +150,6 @@ def send_email(email: string, name: string, otp: string, password: string, role:
     finally:
         server.quit()
 
-
 @app.post("/otp")
 def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     if payload.get("signup"):
@@ -177,7 +174,6 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
     otp = generate_otp()
     return send_email(email=email, name=name, otp=otp, role=role, password='')
     
-
 def generate_secure_password(length=8):
     all_characters = string.ascii_letters + string.digits + "#?$@_!"
     password = []
@@ -234,8 +230,7 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                         detail=f"Database error: {str(e)}"
-                    )
-                
+                    )                
             elif not payload.get("signup") and payload.get("issue"):
                 try: 
                     with db.cursor() as cursor:
@@ -300,6 +295,7 @@ def verify_admin(payload: dict):
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Session expired or invalid token."
         )
+    
     if user_data["user_role"] != "Admin":
         return {"isAdmin": False, "user_email": user_data["user_email"]}
     else:
@@ -386,6 +382,7 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
                     return {'update': True}
                 else: 
                     return{'update': False}
+                
         if payload.get('issue_status') and payload.get('issue_status') != '' and payload.get('issue_status') == 'Issued':
             with db.cursor() as cursor:
                 cursor.execute("UPDATE book_data SET copy_count = copy_count + 1, issued_count = issued_count - 1 WHERE book_isbn = %s AND issued_count != 0",(payload.get('issue_isbn'),))

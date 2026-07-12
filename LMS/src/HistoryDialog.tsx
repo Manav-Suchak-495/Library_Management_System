@@ -339,7 +339,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                     py: {xs: 0.5, sm: 0.7},
                     mb: 1,
                     borderRadius: 2,
-                    fontSize: {xs: '1rem', sm: '0.8rem', md: '0.8rem', lg: '0.8rem'}
+                    fontSize: {xs: '1.1rem', sm: '0.9rem', md: '0.9rem', lg: '0.9rem'}
                 }}>
                     {issueId}
                 </Box>
@@ -384,7 +384,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -411,7 +411,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -438,7 +438,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -466,7 +466,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -493,7 +493,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -520,7 +520,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,
@@ -547,7 +547,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.63,
+                        mt: {xs: 0.9, sm:0.63},
                     }}>
                         <Typography sx={{
                             flexShrink: 0,

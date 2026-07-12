@@ -185,7 +185,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, f
                     py: 0.5,
                     mb: 1,
                     borderRadius: 2,
-                    fontSize: {xs: '1rem', sm: '1rem', md: '1rem', lg: '1rem'}
+                    fontSize: {xs: '1.1rem', sm: '1.1rem', md: '1.1rem', lg: '1.1rem'}
                 }}>
                     {bookDetails.book_isbn}
                 </Box>
