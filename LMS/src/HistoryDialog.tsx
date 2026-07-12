@@ -133,8 +133,8 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             width: {xs: 48, sm: 48, md: 40, lg: 40},
                             pr: 1,
                             minWidth: {xs: 40, sm: 40, md: 36, lg: 36},
-                            backgroundColor: isSearching ? 'transparent' : '#000000',
-                            borderRadius: isSearching ? 8 : {xs: 0, sm:2.7},
+                            backgroundColor: '#000000',
+                            borderRadius: {xs: 0, sm:2.7},
                         }}>
                             <ArrowBackIosNewRounded sx={{
                                 fontSize: '1rem',
@@ -210,7 +210,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                                 width: {xs: 48, sm: 48, md: 40, lg: 40},
                                 minWidth: {xs: 48, sm: 48, md: 40, lg: 40},
                                 backgroundColor: '#000000',
-                                borderRadius: 2.7,
+                                borderRadius: {xs: 0, sm:2.7},
                             }}>
                                 <Search sx={{
                                     fontSize: '1rem',
