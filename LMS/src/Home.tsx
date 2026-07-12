@@ -132,7 +132,7 @@ function Home({user_email} : {user_email: string;}) {
     
     useEffect(() => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.post(`${apiUrl}/isAdmin`,{Token: sessionStorage.getItem("Token")}).then((response) =>{
+        axios.post(`${apiUrl}/isAdmin`,{Token: localStorage.getItem('token')}).then((response) =>{
             setIsAdmin(response.data.isAdmin)
             setEmail(response.data.user_email)
         })

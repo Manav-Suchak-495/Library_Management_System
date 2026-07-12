@@ -34,7 +34,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog, se
             await axios.post(`${apiUrl}/verify-otp`, {"Token": token, "forgot": true, "otp": otp}).then((response)=>{
                 if(response.data.Authenticated){
                     console.log('Login successful');
-                    sessionStorage.setItem("Token", response.data.Token);
+                    localStorage.setItem('token', response.data.Token);
                     setForgotPasswordDialog(false);
                     setUserEmail(email);
                     navigate('/home');

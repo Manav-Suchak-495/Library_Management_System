@@ -44,7 +44,7 @@ function Login({setUserEmail} : {setUserEmail: (arg :string)=>void;}) {
             await axios.post(`${apiUrl}/Login`, {"email": email, "password": password}).then((response) =>{
             console.log('Login successful');
             setUserEmail(email)
-            sessionStorage.setItem("Token", response.data.Token);
+            localStorage.setItem('token', response.data.Token);
             navigate('/home');
         }).catch ((error)=>{
             console.error('Login failed or network error:', error);

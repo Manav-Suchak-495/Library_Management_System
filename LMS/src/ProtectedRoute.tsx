@@ -10,7 +10,7 @@ const ProtectedRoute = () => {
 
   useEffect( () => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.post(`${apiUrl}/verify-session`,{"Token": sessionStorage.getItem("Token")}).then((response) =>{
+        axios.post(`${apiUrl}/verify-session`,{"Token": localStorage.getItem("token")}).then((response) =>{
         setIsAuthenticated(true);
       }).catch((error) => {
         console.error("Session verification failed backend-side:", error.response?.data);

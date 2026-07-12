@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 interface Header_Interface {
     handleAddDialog: () => void;
     handleHistoryDialog: () => void;
@@ -16,6 +17,7 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
     const [search, setSearch] = useState('')
     const [isAdmin, setIsAdmin] = useState(false)
+    const navigate = useNavigate()
 
     const assets = {
           Logo_Black: Logo_Black,
@@ -30,7 +32,7 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
 
     useEffect(() =>{
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.post(`${apiUrl}/isAdmin`,{Token: sessionStorage.getItem('Token')}).then((response) =>{
+        axios.post(`${apiUrl}/isAdmin`,{Token: localStorage.getItem('token')}).then((response) =>{
             setIsAdmin(response.data.isAdmin)
         })
         .catch(() => {
@@ -60,7 +62,11 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
             mb: 4,  
             borderColor: '#000000 !important',
             }}>
-            <Box component="img"
+            <Box onClick={()=>{
+                navigate('/')
+                localStorage.removeItem('token');
+            }}
+            component="img"
             src={assets.Logo_Black}
             sx={{
                 height: '100%',

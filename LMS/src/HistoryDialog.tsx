@@ -232,19 +232,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         {issueData.map((issueDetail)=>(
                             <Box key={issueDetail.issue_id}
                             onClick={()=>{
-                                const issueAtDate = (issueAt || issueAt === '') ? '' : new Date(issueDetail.issue_at)
-                                const issueAtIst = (issueAtDate && !isNaN(issueAtDate.getTime())) ? issueAtDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false}): '';
-                                const returnAtDate = (issueAt || issueAt === '') ? '' : new Date(issueDetail.issue_at)
-                                const returnAtIst = (issueAtDate && !isNaN(issueAtDate.getTime())) ? issueAtDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false}): '';
+                                var issueAtDate = ''
+                                var returnAtDate = ''
+                                if(issueDetail.issue_at && issueDetail.issue_at !==''){
+                                    issueAtDate = new Date(issueDetail.issue_at).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false})
+                                }
+                                if (issueDetail.return_at && issueDetail.return_at !== ''){
+                                    returnAtDate = new Date(issueDetail.issue_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false})
+                                }
                                 setIssueId(issueDetail.issue_id)
                                 setIssueIsbn(issueDetail.issue_isbn)
                                 setIssueTitle(issueDetail.issue_title)
                                 setIssueEmail(issueDetail.issue_email)
                                 setIssueTo(issueDetail.issue_to)
                                 setIssueBy(issueDetail.issue_by)
-                                setIssueAt(issueAtIst)
+                                setIssueAt(issueAtDate)
                                 setReturnBy(issueDetail.return_by)
-                                setReturnAt(returnAtIst)
+                                setReturnAt(returnAtDate)
                                 setIssueStatus(issueDetail.issue_status)
                                 setIsIssueDetailsDialog(true)
                             }}
@@ -345,23 +349,28 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                 </Box>
                 
                 <Box sx={{
+                    width: '100%',
                     flexGrow: 1,
                     display: 'flex',
-                    flexDirection:'column',
+                    flexDirection:'row',
                     alignItems: 'center',
                     justifyContent: 'flex-start',
                     
                 }}>
                     <Box sx={{
-                        width: '100%',
+                        flexShrink: 0,
+                        width: {xs: '90px', sm: '85px', md: '81px', lg: '88px'},
                         display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: 0.5,
+                        flexDirection: 'column',
+                        justifyContent: 'flex-start',
+                        //mt: 0.05,
                     }}>
                         <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
@@ -370,25 +379,11 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             Book Isbn:
                         </Typography>
                         <Typography sx={{
-                            lineHeight: 1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueIsbn}
-                        </Typography>
-                    </Box>
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
@@ -397,52 +392,39 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             Book Title:
                         </Typography>
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueTitle}
-                        </Typography>
-                    </Box>
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
                             mr: 1
                         }}>
-                            Issued To:
+                            issue To:
                         </Typography>
+
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueTo}
-                        </Typography>
-                    </Box>
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pl: 1,
+                            mr: 1
+                        }}>
+                            Email:
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            flexShrink: 0,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
@@ -450,81 +432,41 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }}>
                             Status:
                         </Typography>
+
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueStatus}
-                        </Typography>
-                    </Box>
-                    
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
                             mr: 1
                         }}>
-                            Issued By:
+                            Issue By:
                         </Typography>
+
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueBy}
-                        </Typography>
-                    </Box>
-                    {/*<Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
                             mr: 1
                         }}>
-                            Issued At:
+                            Issue At:
                         </Typography>
+                        
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {issueAt}
-                        </Typography>
-                    </Box>*/}
-                    <Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
@@ -532,26 +474,13 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }}>
                             Return To:
                         </Typography>
+
                         <Typography sx={{
-                            lineHeight: 1.1,
-                            overflow: 'auto',
-                            fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
-                            pr: 1,
-                        }}> 
-                            {returnBy}
-                        </Typography>
-                    </Box>
-                    {/*<Box sx={{
-                        width: '100%',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        mt: {xs: 0.9, sm:0.63},
-                    }}>
-                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
                             flexShrink: 0,
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             overflow : 'auto',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
@@ -559,16 +488,132 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }}>
                             Return At:
                         </Typography>
+                    </Box>
+
+
+                    <Box sx={{
+                        overflow: 'auto',
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'flex-start',
+                        pr: 1,
+                    }}>
                         <Typography sx={{
-                            lineHeight: 1.1,
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
                             overflow: 'auto',
                             fontWeight: 'Bold',
                             fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
-                        }}> 
+                        }}>
+                            {issueIsbn}
+                        </Typography>
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueTitle}
+                        </Typography>
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueTo}
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueEmail}
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueStatus}
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueBy}
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {issueAt}
+                        </Typography>
+                        
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
+                            {returnBy}
+                        </Typography>
+
+                        <Typography sx={{
+                            height: '19px',
+                            display: 'flex',
+                            alignContent: 'center',
+                            lineHeight: 1.2,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
+                            pr: 1,
+                        }}>
                             {returnAt}
                         </Typography>
-                    </Box>*/}
+                    </Box>
                 </Box>
             </DialogContent>
             
