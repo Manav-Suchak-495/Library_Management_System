@@ -113,15 +113,15 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
                 display: "flex",
                 flexDirection: 'row'
             }}>
-                {(!isAndroid && isAdmin &&
-                <Button onClick={handleAddDialog} sx={{
+                {isAdmin &&
+                (<Button onClick={handleAddDialog} sx={{
                 height: {xs:'60px', sm: '60px', md: '40px', lg:'45px'},
                 width: {xs:'64px', sm: '64px', md: '40px', lg:'45px'},
+                display: {xs: 'none', sm: 'inline-flex'},
                 aspectRatio: '1/1',
                 textAlign: 'right',
                 minWidth: 0,
                 p: 1,
-                borderLeft: '0',
                 color: '#000000',
                 borderRadius: {xs: 0, sm: 0, md: 2, lg:2},
                 backgroundColor: {xs: 'primary.main', sm: 'primary.main', md: '#FFFFFF', lg:'#FFFFFF'},
@@ -151,6 +151,27 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
                 }}>
                     <LocalLibraryRounded/>
                 </Button>
+                {isAdmin && (
+                <Button onClick={handleAddDialog} sx={{
+                    height: '60px',
+                    width: '60px',
+                    display: {xs: 'inline-flex', sm: 'none'},
+                    position: 'fixed',
+                    zIndex: 1000,
+                    bottom: '24px',
+                    right: '24px',
+                    aspectRatio: '1/1',
+                    minWidth: 0,
+                    p: 1,
+                    color: '#000000',
+                    borderRadius: 9,
+                    backgroundColor: '#000000',
+                    fontSize: '0.9rem',
+                    fontStyle: 'Bold',         
+                }}>
+                        <AddIcon sx={{ stroke: "#27CF54", color: '#27CF54', strokeWidth: 0.18}}/>
+                    </Button>
+                )}
             </Box>
         </Box>
     )
