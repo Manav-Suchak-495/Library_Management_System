@@ -158,7 +158,7 @@ function Header( { handleAddDialog, handleHistoryDialog, fetchBookData, fetchIss
                     display: {xs: 'inline-flex', sm: 'none'},
                     position: 'fixed',
                     zIndex: 1000,
-                    bottom: '18px',
+                    bottom: '20px',
                     right: '24px',
                     aspectRatio: '1/1',
                     minWidth: 0,
