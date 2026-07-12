@@ -488,7 +488,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             {issueBy}
                         </Typography>
                     </Box>
-                    <Box sx={{
+                    {/*<Box sx={{
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'row',
@@ -514,7 +514,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }}> 
                             {issueAt}
                         </Typography>
-                    </Box>
+                    </Box>*/}
                     <Box sx={{
                         width: '100%',
                         display: 'flex',
@@ -542,7 +542,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             {returnBy}
                         </Typography>
                     </Box>
-                    <Box sx={{
+                    {/*<Box sx={{
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'row',
@@ -568,7 +568,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }}> 
                             {returnAt}
                         </Typography>
-                    </Box>
+                    </Box>*/}
                 </Box>
             </DialogContent>
             
