@@ -3,8 +3,10 @@ import Login from './Login';
 import Home from './Home';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
+import { useState } from 'react';
 
 function App() {
+  const [userEmail, setUserEmail] =useState('')
   const theme = createTheme({
     palette: {
       primary: {
@@ -23,9 +25,9 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Login setUserEmail={setUserEmail}/>} />
           <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<Home user_email={userEmail}/>} />
           </Route>
         </Routes>
       </BrowserRouter>

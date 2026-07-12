@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingOverlay from "./LoadingOverlay";
 
-const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: { forgotPasswordDialog: boolean, setForgotPasswordDialog: (args :boolean) => void}) => {
+const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog, setUserEmail}: { forgotPasswordDialog: boolean, setForgotPasswordDialog: (args :boolean) => void, setUserEmail : (args: string) => void}) => {
     
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
@@ -19,14 +19,14 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
             setIsLoading(true)
             await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
                 if(response.data.Authenticated){
-                    alert('OTP sent successfully!!!')
-                    setIsEmailVerified(true)
-                    setToken(response.data.Token)
+                    alert('OTP sent successfully!!!');
+                    setIsEmailVerified(true);
+                    setToken(response.data.Token);
                 }
             }).catch((error)=>{
-                console.log("Error While Verifying Email" + error.response?.data)
+                console.log("Error While Verifying Email" + error.response?.data);
             }).finally(()=>{
-                setIsLoading(false)
+                setIsLoading(false);
             })
         }
         else{
@@ -35,13 +35,14 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 if(response.data.Authenticated){
                     console.log('Login successful');
                     sessionStorage.setItem("Token", response.data.Token);
-                    setForgotPasswordDialog(false)
+                    setForgotPasswordDialog(false);
+                    setUserEmail(email);
                     navigate('/home');
                 }
             }).catch((error)=>{
-                console.log("Error While Verifying Email" + error.response?.data + error)
+                console.log("Error While Verifying Email" + error.response?.data + error);
             }).finally(()=>{
-                setIsLoading(false)
+                setIsLoading(false);
             })
         }
     }
@@ -103,6 +104,7 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                 }}/>
                 {isEmailVerified &&
                 (<Typography onClick={ async ()=>{
+                    setIsLoading(true)
                     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
                     await axios.post(`${apiUrl}/otp`, {"email": email, "signup": false}).then((response)=>{
                         if(response.data.Authenticated){
@@ -111,6 +113,8 @@ const ForgotPasswordDialog = ({forgotPasswordDialog, setForgotPasswordDialog}: {
                             setToken(response.data.Token)
                         }}).catch((error)=>{
                             console.log("Error While Verifying Email" + error.response?.data)
+                        }).finally(()=>{
+                            setIsLoading(false)
                         })
                 }}
                     sx={{ mt: 0.5, fontWeight: 'semibold', textAlign: 'right', color: 'primary.main', fontSize: '0.75rem', '&:hover': { color: '#09BF18', textDecoration: 'underline' }, cursor: 'pointer',}}>

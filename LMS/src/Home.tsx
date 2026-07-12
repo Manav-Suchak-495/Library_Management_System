@@ -33,7 +33,7 @@ interface IssueDataInterface {
     return_at: string;
 }
 
-function Home() {
+function Home({user_email} : {user_email: string;}) {
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState(false)
     const [email, setEmail] = useState('')
@@ -43,6 +43,7 @@ function Home() {
     const [books, setBooks] = useState<BookDataInterface[]>([])
     const [booksDisplayed, setBooksDisplayed] = useState<BookDataInterface[]>([])
     const [issueData, setIssueData] = useState<IssueDataInterface[]>([])
+    const [issueDataDisplayed, setIssueDataDisplayed] = useState<IssueDataInterface[]>([])
     const [bookDetails, setBookDetails] = useState<BookDataInterface>({
         book_isbn: '',
         book_title: '',
@@ -87,19 +88,40 @@ function Home() {
         }
     }
 
-    const fetchIssueData = () => {
+    const fetchIssueData = async () => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-        axios.post(`${apiUrl}/issue/fetch`, {'issue_to': ''}).then((response) =>{
-            if(response.data && response.data.length > 0){
-                    setIssueData(response.data)
-            }
-        }).catch((err) =>{
-            console.error("Error fetching books:", err);
-            setError(true);
-        }).finally(()=>{
-            setLoading(false);
-        })
+        if(isAdmin){
+                await axios.post(`${apiUrl}/issue/fetch`, {'issue_email': ''}).then((response) =>{
+                if(response.data && response.data.length > 0){
+                        setIssueData(response.data)
+                        setIssueDataDisplayed(response.data)
+                }
+            }).catch((err) =>{
+                console.error("Error fetching books:", err);
+                setError(true);
+            })
+        }
+        else{
+            await axios.post(`${apiUrl}/issue/fetch`, {'issue_email': user_email}).then((response) =>{
+                if(response.data && response.data.length > 0){
+                        setIssueData(response.data)
+                        setIssueDataDisplayed(response.data)
+                }
+            }).catch((err) =>{
+                console.error("Error fetching books:", err);
+                setError(true);
+            })
+        }
     }
+    const filterIssueData = ({ searchValue}: { searchValue: string}) => {
+        const cleanTerm = searchValue.toLowerCase().trim()
+        if (cleanTerm === "") {
+            setIssueDataDisplayed(issueData)
+        } else {
+                setIssueDataDisplayed( issueData.filter(issue => issue.issue_by.toLowerCase().includes(cleanTerm) || issue.issue_to.toLowerCase().includes(cleanTerm) || issue.issue_email.includes(cleanTerm) || issue.issue_isbn.toLowerCase().includes(cleanTerm) || issue.issue_status.toLowerCase().includes(cleanTerm) || issue.issue_title.toLowerCase().includes(cleanTerm) || issue.issue_id.toLowerCase().includes(cleanTerm)))
+        }
+    }
+
     
     useEffect(() => {
         const userAgent = navigator.userAgent || navigator.vendor;
@@ -145,7 +167,7 @@ function Home() {
             { isBookDetailsOpen && (<BookDetailsDialog open = {isBookDetailsOpen} fetchBooks={fetchBooks}
                 onClose={()=> {setIsBookDetailsOpen(false); setBookDetails({book_isbn: '',book_title: '',book_author: '',book_publisher: '',book_category: '',copy_count: 0,issued_count: 0,book_description: '',book_status: '',});}}
                 bookDetails={bookDetails} user_email={email} isAdmin={isAdmin}/>)}
-            { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => {setIsHistoryDialog(false)}} user_email={email} isAdmin={isAdmin} issueData={issueData} fetchBooks={fetchBooks} fetchIssueData={fetchIssueData}/>)}
+            { isHistoryDialog && (<HistoryDialog open={isHistoryDialog} onClose={() => {setIsHistoryDialog(false)}} user_email={email} isAdmin={isAdmin} issueData={issueDataDisplayed} fetchBooks={fetchBooks} fetchIssueData={fetchIssueData} filterIssueData={filterIssueData}/>)}
         </Box>
     );
 }

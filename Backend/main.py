@@ -77,8 +77,8 @@ def get_db_connection():
 @app.post("/Login")
 def login(payload: dict,response: Response,db: psycopg2.extensions.connection = Depends(get_db_connection),):
     try:
-        email = payload.get("email")
-        password = payload.get("password")
+        email = payload.get("email").lower().strip()
+        password = payload.get("password").strip()
         print(email,password)
         with db.cursor() as cursor:
             cursor.execute( "SELECT * FROM user_data WHERE user_email=%s AND user_password=%s", (email, password), )
@@ -156,11 +156,11 @@ def send_email(email: string, name: string, otp: string, password: string, role:
 @app.post("/otp")
 def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     if payload.get("signup"):
-        email = payload.get("email")
+        email = payload.get("email").lower().strip()
         role = ''
         name = ''
     else:
-        email = payload.get("email")
+        email = payload.get("email").lower().strip()
         with db.cursor() as cursor:
             cursor.execute("SELECT * FROM user_data WHERE user_email=%s",(email,))
             user = cursor.fetchone()
@@ -189,7 +189,7 @@ def generate_secure_password(length=8):
 def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     Token = verify_jwt_token(payload.get('Token'))
     if int(payload.get("otp")) == int(Token.get('otp')):
-        user_email=Token.get('user_email')
+        user_email=Token.get('user_email').lower().strip()
         if payload.get('forgot'):
             try: 
                 user_password = generate_secure_password()
@@ -207,24 +207,27 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
                     detail=f"Database error: {str(e)}"
                 )
         else:
-            issue_email = Token.get('user_email')
+            issue_email = Token.get('user_email').lower().strip()
             issue_to = Token.get('user_name')
             issue_isbn = payload.get('issue_isbn')
             issue_title = payload.get('issue_title')
             issue_status = payload.get('issue_status')
-            issue_by = payload.get('issue_by')
+            issue_by = payload.get('issue_by').strip().lower()
             if payload.get("signup") and payload.get("issue"):
-                user_email = payload.get('user_email')
+                user_email = payload.get('user_email').strip().lower()
                 user_name = " ".join(payload.get('user_name').split()).title()
                 user_mobile = payload.get('user_mobile')
                 user_password = generate_secure_password()
                 try: 
                     with db.cursor() as cursor:
                         cursor.execute("INSERT INTO user_data (user_name, user_email, user_password, user_mobile, user_role) VALUES(%s, %s, %s, %s, %s)",(user_name,user_email,user_password,user_mobile, 'Reader'))
-                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, user_email, issue_isbn, issue_title, issue_status, issue_by))
-                        cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
-                        db.commit()
-                        return send_email( email=user_email, name='', role=Token.get('user_name'), otp='', password=user_password)
+                        cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s AND copy_count != 0",(issue_isbn,))
+                        if cursor.rowcount > 0:
+                            cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
+                            db.commit()
+                            return send_email( email=user_email, name='', role=Token.get('user_name'), otp='', password=user_password)
+                        else:
+                            return {"Authenticated" : False}
                 except Exception as e:
                     db.rollback()
                     traceback.print_stack(e)
@@ -236,10 +239,13 @@ def send_otp(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_
             elif not payload.get("signup") and payload.get("issue"):
                 try: 
                     with db.cursor() as cursor:
-                        cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
-                        cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(issue_isbn,))
-                        db.commit()
-                        return {"Authenticated" : True}
+                        cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s AND copy_count != 0",(issue_isbn,))
+                        if cursor.rowcount > 0:
+                            cursor.execute("INSERT INTO issue_data(issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by) VALUES(%s, %s, %s, %s, %s, %s)", (issue_email, issue_to, issue_isbn, issue_title, issue_status, issue_by))
+                            db.commit()
+                            return {"Authenticated" : True}
+                        else:
+                            return {"Authenticated" : False}
                 except Exception as e:
                     db.rollback()
                     traceback.print_stack(e)
@@ -310,7 +316,7 @@ def add_books(payload: dict, response: Response, db: psycopg2.extensions.connect
     issued_count = payload.get("issuedCount", 0)
     book_status = payload.get("status")
     book_description = payload.get("description").strip() if payload.get("description") or payload.get("desciption") != '' else "No Description"
-    added_by = payload.get("addedBy")
+    added_by = payload.get("addedBy").lower().strip()
     try:
         with db.cursor() as cursor:
             cursor.execute("INSERT INTO book_data (book_isbn, book_title, book_author, book_publisher, book_category, copy_count, issued_count, book_status, book_description, added_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
@@ -349,9 +355,9 @@ def getBookData(db: psycopg2.extensions.connection = Depends(get_db_connection))
 @app.post("/issue/fetch")
 def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_db_connection)):
     try:
-        if payload.get('issue_to') and payload.get('issue_to') != '':
+        if payload.get('issue_email') and payload.get('issue_email') != '':
             with db.cursor() as cursor:
-                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_to = %s ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 ELSE 4 END ASC ;", (payload.get('issue_to'),))
+                cursor.execute("SELECT issue_id, issue_isbn, issue_title, issue_email, issue_to, issue_status, issue_by, issue_at, return_by, return_at FROM issue_data WHERE issue_email = %s ORDER BY CASE issue_status WHEN 'Pending' THEN 1 WHEN 'Issued' THEN 2 WHEN 'Returned' THEN 3 ELSE 4 END ASC ;", (payload.get('issue_email').lower().strip(),))
                 issue_data = cursor.fetchall()
                 cursor.close()
                 return issue_data
@@ -372,18 +378,24 @@ def getBookData(payload: dict, db: psycopg2.extensions.connection = Depends(get_
     try:
         if payload.get('issue_status') and payload.get('issue_status') != '' and payload.get('issue_status') == 'Pending':
             with db.cursor() as cursor:
-                cursor.execute("UPDATE issue_data SET issue_status = %s, issue_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Issued', payload.get('admin'), payload.get('issue_id'), 'Issued'))
-                cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s",(payload.get('issue_isbn'),))
-                db.commit()
-                cursor.close()
-                return {'update': True}
+                cursor.execute("UPDATE book_data SET copy_count = copy_count - 1, issued_count = issued_count + 1 WHERE book_isbn = %s AND copy_count != 0",(payload.get('issue_isbn'),))
+                if cursor.rowcount > 0:
+                    cursor.execute("UPDATE issue_data SET issue_status = %s, issue_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Issued', payload.get('admin').lower().strip(), payload.get('issue_id'), 'Issued'))
+                    db.commit()
+                    cursor.close()
+                    return {'update': True}
+                else: 
+                    return{'update': False}
         if payload.get('issue_status') and payload.get('issue_status') != '' and payload.get('issue_status') == 'Issued':
             with db.cursor() as cursor:
-                cursor.execute("UPDATE issue_data SET issue_status = %s, return_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Returned', payload.get('admin'), payload.get('issue_id'), 'Returned'))
-                cursor.execute("UPDATE book_data SET copy_count = copy_count + 1, issued_count = issued_count - 1 WHERE book_isbn = %s",(payload.get('issue_isbn'),))
-                db.commit()
-                cursor.close()
-                return {'update': True}
+                cursor.execute("UPDATE book_data SET copy_count = copy_count + 1, issued_count = issued_count - 1 WHERE book_isbn = %s AND issued_count != 0",(payload.get('issue_isbn'),))
+                if cursor.rowcount > 0:
+                    cursor.execute("UPDATE issue_data SET issue_status = %s, return_by = %s WHERE issue_id = %s AND issue_status != %s", ( 'Returned', payload.get('admin').lower().strip(), payload.get('issue_id'), 'Returned'))
+                    db.commit()
+                    cursor.close()
+                    return {'update': True}
+                else: 
+                    return{'update': False}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

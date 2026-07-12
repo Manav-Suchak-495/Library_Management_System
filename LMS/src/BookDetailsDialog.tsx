@@ -388,7 +388,7 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, f
                 slotProps={{
                     paper: {
                     sx: {
-                        width: {xs: '355px', sm: '355px', md: '325px', lg: '355px'}, 
+                        width: {xs: '342px', sm: '342px', md: '324px', lg: '342px'}, 
                         maxWidth: {xs:'calc(100% - 32px)', sm: 'calc(100% - 32px)'},
                         minHeight: {xs: '285px', sm: '285px', md: '285px', lg: '285px'}, 
                         margin: 'auto',
@@ -428,8 +428,8 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, f
                             sx={{
                             mt: 3,
                             "& .MuiInputBase-root": { 
-                                height : {xs : '50px', sm: '50px', md: '36px', lg: '44px'}, 
-                                fontSize: { xs: '1rem', sm: '1rem', md: '0.9rem', lg: '0.9rem' } ,
+                                height : {xs : '44px', sm: '44px', md: '36px', lg: '44px'}, 
+                                fontSize: { xs: '0.9rem', sm: '0.9rem', md: '0.9rem', lg: '0.9rem' } ,
                                 borderRadius: { xs: 2.5, sm: 2.5, md: 2.5, lg: 2.5 },
                                 bordercolor: 'primary.main',
                                 }, 
@@ -447,8 +447,8 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, f
                             sx={{
                             mt: 2.85,
                             "& .MuiInputBase-root": { 
-                                height : {xs : '50px', sm: '50px', md: '36px', lg: '44px'}, 
-                                fontSize: { xs: '1rem', sm: '1rem', md: '0.9rem', lg: '0.9rem' } ,
+                                height : {xs : '44px', sm: '44px', md: '36px', lg: '44px'}, 
+                                fontSize: { xs: '0.9rem', sm: '0.9rem', md: '0.9rem', lg: '0.9rem' } ,
                                 borderRadius: { xs: 2.5, sm: 2.5, md: 2.5, lg: 2.5 },
                                 bordercolor: 'primary.main',
                                 }, 
@@ -466,26 +466,74 @@ const BookDetailsDialog = ({ open, onClose, bookDetails , user_email, isAdmin, f
                             sx={{
                             mt: 2.85,
                             "& .MuiInputBase-root": { 
-                                height : {xs : '50px', sm: '50px', md: '36px', lg: '44px'}, 
-                                fontSize: { xs: '1rem', sm: '1rem', md: '0.9rem', lg: '0.9rem' } ,
+                                height : {xs : '44px', sm: '44px', md: '36px', lg: '44px'}, 
+                                fontSize: { xs: '0.9rem', sm: '0.9rem', md: '0.9rem', lg: '0.9rem' } ,
                                 borderRadius: { xs: 2.5, sm: 2.5, md: 2.5, lg: 2.5 },
                                 bordercolor: 'primary.main',
                                 }, 
                         }}/>)}
-                        {!isEmailVerified &&
-                        (<Typography onClick={()=>{
-                            setIssueEmail('');
-                            setIssueMobile('');
-                            setIssueName('');
-                            if(signUp){
-                                setSignUp(false);
-                            }else{
-                                setSignUp(true);
+                        <Typography onClick={ async ()=>{
+                            if(isEmailVerified){
+                                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+                                if(!isAdmin){
+                                    setIsLoading(true)
+                                    setIssueEmail(user_email);
+                                    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+                                    await axios.post(`${apiUrl}/otp`, {"email": user_email, "signup": false}).then((response)=>{
+                                            if(response.data.Authenticated){
+                                                setIsEmailVerified(true)
+                                                alert('OTP sent successfully!!!')
+                                                setToken(response.data.Token)
+                                            }
+                                        }).catch((error)=>{
+                                                console.log("Error While Verifying Email" + error.response?.data)
+                                        }).finally(()=>{
+                                            setIsLoading(false)
+                                        })
+                                }
+                                else{                                
+                                    if(isAdmin && issueEmail.trim() !== '' && !signUp){
+                                        setIsLoading(true)
+                                        await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": false}).then((response)=>{
+                                            if(response.data.Authenticated){
+                                                setIsEmailVerified(true)
+                                                alert('OTP sent successfully!!!')
+                                                setToken(response.data.Token)
+                                            }}).catch((error)=>{
+                                                console.log("Error While Verifying Email" + error.response?.data)
+                                            }).finally(()=>{
+                                            setIsLoading(false)
+                                        })
+                                    }
+                                    else if(isAdmin && signUp){
+                                        setIsLoading(true)
+                                        await axios.post(`${apiUrl}/otp`, {"email": issueEmail, "signup": true}).then((response)=>{
+                                            if(response.data.Authenticated){
+                                                setIsEmailVerified(true)
+                                                alert('OTP sent successfully!!!')
+                                                setToken(response.data.Token)
+                                            }}).catch((error)=>{
+                                                console.log("Error While Verifying Email" + error.response?.data)
+                                            }).finally(()=>{
+                                            setIsLoading(false)
+                                        })
+                                    }
+                                }
+                            }
+                            else{
+                                setIssueEmail('');
+                                setIssueMobile('');
+                                setIssueName('');
+                                if(signUp){
+                                    setSignUp(false);
+                                }else{
+                                    setSignUp(true);
+                                }
                             }
                         }}
                             sx={{ mt: 0.5, fontWeight: 'semibold', textAlign: 'right', color: 'primary.main', fontSize: '0.75rem', '&:hover': { color: '#09BF18', textDecoration: 'underline' }, cursor: 'pointer',}}>
                                 {isEmailVerified ? "Resend OTP" : (isAdmin && signUp) ? "OTP Verification" : "Add Account"}
-                            </Typography>)}
+                            </Typography>
                     </DialogContent>
                     <DialogActions sx={{
                         px: "24px",

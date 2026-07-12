@@ -9,7 +9,7 @@ import Logo_Green_Black_White_Back from './assets/Logo_Green_Black_White_Back.pn
 import ForgotPasswordDialog from './ForgotPasswordDialog';
 import LoadingOverlay from './LoadingOverlay';
 
-function Login() {
+function Login({setUserEmail} : {setUserEmail: (arg :string)=>void;}) {
     const [isAndroid, setIsAndroid] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -43,6 +43,7 @@ function Login() {
             const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
             await axios.post(`${apiUrl}/Login`, {"email": email, "password": password}).then((response) =>{
             console.log('Login successful');
+            setUserEmail(email)
             sessionStorage.setItem("Token", response.data.Token);
             navigate('/home');
         }).catch ((error)=>{
@@ -151,7 +152,6 @@ function Login() {
                         endAdornment: (
                             <InputAdornment position="end">
                             <IconButton
-                                aria-label="toggle password visibility"
                                 onClick={handleClickShowPassword}
                                 edge="end"
                             >
@@ -184,7 +184,7 @@ function Login() {
                     justifyContent: 'flex-end',
                     p: 0,
                 }}>
-                    <Typography onClick={()=>setForgotPasswordDialog(true)}
+                    <Typography onClick={()=>{setForgotPasswordDialog(true); setEmail(''); setPassword('')}}
                     sx={{ mt: 0.5, fontWeight: 'semibold', textAlign: 'right', color: 'primary.main', fontSize: '0.75rem', '&:hover': { color: '#09BF18', textDecoration: 'underline' }, cursor: 'pointer',}}>
                         Forgot Password?
                     </Typography>
@@ -207,7 +207,7 @@ function Login() {
                 Login
             </Button>
         </Box>
-        {forgotPasswordDialog && (<ForgotPasswordDialog forgotPasswordDialog={forgotPasswordDialog} setForgotPasswordDialog={() => {setForgotPasswordDialog(false)}}/>)}
+        {forgotPasswordDialog && (<ForgotPasswordDialog forgotPasswordDialog={forgotPasswordDialog} setForgotPasswordDialog={() => {setForgotPasswordDialog(false)}} setUserEmail={setUserEmail}/>)}
         {showError && <Dialog
             open={showError}
             onClose={() => setShowError(false)}

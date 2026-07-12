@@ -1,8 +1,8 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, TextField, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react";
-import Logo_Black from './assets/Logo_Green_Black_White_Back.png';
-import { ArrowBackIos, ArrowBackIosNewRounded, AutoStoriesRounded, BookmarkAdd, BookmarkAddedRounded, BookmarkAddRounded, BookmarkRemoveOutlined, BookOnlineRounded, ClassOutlined, CollectionsBookmarkOutlined, CollectionsBookmarkRounded, LibraryAddCheckRounded, MoveToInboxRounded, Search} from "@mui/icons-material";
+import { ArrowBackIosNewRounded, BookmarkAddedRounded, BookmarkAddRounded, ClassRounded, Search} from "@mui/icons-material";
 import axios from "axios";
+import LoadingOverlay from "./LoadingOverlay";
 
 interface HistoryBookDialogInterface{
     open: boolean;
@@ -12,6 +12,7 @@ interface HistoryBookDialogInterface{
     issueData: IssueDataInterface[];
     fetchIssueData: () => void;
     fetchBooks: () => void;
+    filterIssueData: ({searchValue} : {searchValue: string;}) => void;
 }
 interface IssueDataInterface {
     issue_id: string;
@@ -26,7 +27,7 @@ interface IssueDataInterface {
     return_at: string;
 }
 
-const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBooks, fetchIssueData }: HistoryBookDialogInterface)=>{
+const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBooks, fetchIssueData, filterIssueData }: HistoryBookDialogInterface)=>{
     const[search, setSearch] = useState('')
     const [isSearching, setIsSearching] = useState(false);
     const [issueId, setIssueId] = useState('')
@@ -43,25 +44,17 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
     const [isLoading, setIsLoading] = useState(Boolean(open));
     const [isIssueDetailsDialog, setIsIssueDetailsDialog] = useState(false)
 
-    const assets = {
-          Logo_Black: Logo_Black,
-    };
+
     useEffect(() => {
             if (!open) {
                 setIsLoading(true);
                 return;
             }
-    
-            //const hasBookData = Boolean(bookDetails?.book_isbn || bookDetails?.book_title || bookDetails?.book_description);
-    
-            /*if (!hasBookData) {
-                setIsLoading(true);
-                return;
-            }
-    
+
+            setIsLoading(true);
             const timer = window.setTimeout(() => setIsLoading(false), 250);
-            return () => window.clearTimeout(timer);*/
-        }, [open]);//, bookDetails?.book_isbn, bookDetails?.book_title, bookDetails?.book_description]);
+            return () => window.clearTimeout(timer);
+        }, [open]);
     const handleIssueUpdate = async ()=>{
         if(issueStatus != '' && (issueStatus == 'Pending' || issueStatus == 'Issued')){
             setIsLoading(true);
@@ -112,7 +105,9 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                     }
                 }
             }}>
-            <DialogTitle sx={{
+            <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                <LoadingOverlay open={isLoading} />
+                <DialogTitle sx={{
                 display: "flex",
                     flexDirection: "row",
                     height: {xs: 48, sm: 48, md: 40, lg: 40},
@@ -127,19 +122,15 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                     position: 'relative',
             }}>
                         <Button onClick={()=>{
-                            if(isSearching){
-                                setIsSearching(false)
-                            }
-                            else{
                                 onClose()
-                            }
                         }} 
                         sx={{
-                            position: isSearching ? 'relative':'absolute',
-                            zIndex: 1000,
+                            display: isSearching ? 'none': 'inline-flex',
+                            position: 'absolute',
+                            zIndex: isLoading ? 1 : 1000,
                             alignItems: 'center',
-                            height: isSearching? {xs: 40, sm: 40, md: 32, lg: 32} : {xs: 48, sm: 48, md: 40, lg: 40},
-                            width: isSearching ? {xs: 40, sm: 40, md: 32, lg: 32} : {xs: 48, sm: 48, md: 40, lg: 40},
+                            height: {xs: 48, sm: 48, md: 40, lg: 40},
+                            width: {xs: 48, sm: 48, md: 40, lg: 40},
                             pr: 1,
                             minWidth: {xs: 40, sm: 40, md: 36, lg: 36},
                             backgroundColor: isSearching ? 'transparent' : '#000000',
@@ -157,18 +148,20 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             value={search}
                             onChange={(e)=> {
                                 setSearch(e.target.value)
+                                filterIssueData({searchValue:e.target.value})
                             }}
                             slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Search sx={{
-                                            color: '#000000',
-                                            fontSize: '1rem'
-                                        }}/>
-                                    </InputAdornment>
-                                )
-                            },
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                        <IconButton
+                                            onClick={()=>{setIsSearching(false); setSearch('')}}
+                                            edge="start">
+                                            <ArrowBackIosNewRounded sx={{fontSize: '1rem',textAlign: 'center', color: '#27CF54'}}/>
+                                        </IconButton>
+                                        </InputAdornment>
+                                    )
+                                },
                             }}
                             sx={{
                             width: {xs: '100%', sm: '100%', md: '100%', lg:'100%'},
@@ -178,7 +171,8 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                                 borderRadius: {xs:2.5, sm:2.5, md: 2.25, lg: 2.25 },
                                 backgroundColor: '#F5F5F5',
                                 border: '0',
-                                mr: '10px'
+                                ml: '10px',
+                                mr: '11px'
                             }, 
                             "& .MuiOutlinedInput-notchedOutline": {
                                 border: "none", // Removes the border completely
@@ -207,24 +201,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             position: 'absolute',
                             right: {xs: 0.5, sm: 1, md: 2, lg: 2},
                             top: 0,
-                            zIndex: 1000,
-                        }}><Button onClick={()=>{
-                            setIsSearching(true)
-                        }} 
-                        sx={{
-                            position: 'sticky',
-                            alignItems: 'center',
-                            height: {xs: 48, sm: 48, md: 40, lg: 40},
-                            width: {xs: 48, sm: 48, md: 40, lg: 40},
-                            minWidth: {xs: 48, sm: 48, md: 40, lg: 40},
-                            backgroundColor: '#000000',
-                            borderRadius: 2.7,
+                            zIndex: isLoading? 0 : 1000,
                         }}>
-                            <Search sx={{
-                                fontSize: '1rem',
-                                textAlign: 'center',
-                            }}/>
-                        </Button></Box>)}
+                            <Button onClick={()=>setIsSearching(true)} sx={{
+                                position: 'sticky',
+                                alignItems: 'center',
+                                height: {xs: 48, sm: 48, md: 40, lg: 40},
+                                width: {xs: 48, sm: 48, md: 40, lg: 40},
+                                minWidth: {xs: 48, sm: 48, md: 40, lg: 40},
+                                backgroundColor: '#000000',
+                                borderRadius: 2.7,
+                            }}>
+                                <Search sx={{
+                                    fontSize: '1rem',
+                                    textAlign: 'center',
+                                }}/>
+                            </Button>
+                        </Box>)}
             </DialogTitle>
             <DialogContent 
                 sx={{ padding: 0, 
@@ -277,7 +270,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                                     mt: {xs: '10px', sm: '8.5px',md: '7px', lg: '8.5px'},
                                     ml: {xs: '12px', sm: '10px',md: '8px', lg: '10px'}
                                 }}>
-                                    <BookmarkAddRounded sx={{ fontSize: {xs:'28px',sm: '28px',md: '26px', lg: '30px'}}}/>
+                                    {issueDetail.issue_status === 'Pending' ? (<BookmarkAddRounded sx={{ fontSize: {xs:'28px',sm: '28px',md: '26px', lg: '30px'}}}/>) : issueDetail.issue_status === 'Issued' ? (<BookmarkAddedRounded sx={{ fontSize: {xs:'28px',sm: '28px',md: '26px', lg: '30px'}}}/>) : (<ClassRounded sx={{ fontSize: {xs:'28px',sm: '28px',md: '26px', lg: '30px'}}}/>)}
                                 </Box>
                                 
                                 <Box sx={{
@@ -314,10 +307,11 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                             </Box>
                         ))}
                 </DialogContent>
+            </Box>
             </Dialog>
             {isIssueDetailsDialog && 
             (<Dialog open={isIssueDetailsDialog} 
-                onClose={()=>setIsIssueDetailsDialog(false)} 
+                onClose={isLoading ? undefined : ()=>setIsIssueDetailsDialog(false)} 
                 fullWidth maxWidth={false} 
                 disableRestoreFocus
                 slotProps={{
@@ -331,20 +325,9 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         }
                     }
                 }}>
-        
-            {/*{isLoading && isIssueDetailsDialog && (
-                <Box sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    zIndex: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: 'transparent',
-                }}>
-                </Box>
-            )}*/}
-            <DialogContent sx={{
+            <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                <LoadingOverlay open={isLoading} />
+                <DialogContent sx={{
                 py: '13px',
                 px: '13px'
             }}>
@@ -377,14 +360,20 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         mt: 0.5,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Book Isbn:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueIsbn}
@@ -395,17 +384,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Book Title:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1.1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueTitle}
@@ -416,17 +411,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Issued To:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1.1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueTo}
@@ -437,17 +438,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Status:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1.1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueStatus}
@@ -459,17 +466,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Issued By:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1.1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueBy}
@@ -480,17 +493,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
                             Issued At:
                         </Typography>
                         <Typography sx={{
-                            fontWeight: 'bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            lineHeight: 1.1,
+                            overflow: 'auto',
+                            fontWeight: 'Bold',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {issueAt}
@@ -501,17 +520,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
-                            Returned To:
+                            Return To:
                         </Typography>
                         <Typography sx={{
+                            lineHeight: 1.1,
+                            overflow: 'auto',
                             fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {returnBy}
@@ -522,17 +547,23 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        mt: 0.15,
+                        mt: 0.63,
                     }}>
                         <Typography sx={{
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            flexShrink: 0,
+                            lineHeight: 1.1,
+                            overflow : 'auto',
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pl: 1,
+                            mr: 1
                         }}>
-                            Returned At:
+                            Return At:
                         </Typography>
                         <Typography sx={{
+                            lineHeight: 1.1,
+                            overflow: 'auto',
                             fontWeight: 'Bold',
-                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.75rem', lg: '0.75rem'},
+                            fontSize: {xs: '0.9rem', sm: '0.75rem', md: '0.7rem', lg: '0.75rem'},
                             pr: 1,
                         }}> 
                             {returnAt}
@@ -542,7 +573,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
             </DialogContent>
             
             <DialogActions sx={{
-                py: '13px',
+                pb: '13px',
                 px: '13px',
                 mt: -0.75,
             }}>
@@ -578,6 +609,7 @@ const HistoryDialog = ({ open, onClose , user_email, isAdmin, issueData, fetchBo
                     </Button>
                 </Box>
             </DialogActions>
+            </Box>
             </Dialog>)}
             {isLoading &&  (
                 <Box sx={{
